@@ -1,0 +1,53 @@
+services:
+  db:
+    image: postgis/postgis:17-3.5
+    platform: linux/amd64
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-kartaspb}
+      POSTGRES_USER: ${POSTGRES_USER:-kartaspb}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kartaspb_local}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+  migrate:
+    build: ./backend
+    environment: &database_env
+      DB_HOST: db
+      DB_NAME: ${POSTGRES_DB:-kartaspb}
+      DB_USER: ${POSTGRES_USER:-kartaspb}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-kartaspb_local}
+    command: [alembic, upgrade, head]
+    depends_on:
+      db:
+        condition: service_healthy
+  backend:
+    build: ./backend
+    environment: *database_env
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-8000}:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health/ready', timeout=4)"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+  frontend:
+    build: ./frontend
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-5173}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, wget, -q, --spider, http://127.0.0.1/]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+volumes:
+  postgres_data:

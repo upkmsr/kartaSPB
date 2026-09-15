@@ -1,0 +1,39 @@
+name: Sprint 0 checks
+on: [push, pull_request]
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Frontend checks
+        working-directory: frontend
+        run: |
+          npm ci
+          npm test
+          npm run lint
+          npm run typecheck
+          npm run build
+      - name: Start the skeleton
+        run: docker compose up --build --wait --wait-timeout 180
+      - name: Backend and database checks
+        run: |
+          docker compose exec -T backend pytest
+          docker compose exec -T -e RUN_DB_TESTS=1 backend pytest -m integration
+          docker compose exec -T backend ruff check .
+          docker compose exec -T backend ruff format --check .
+          docker compose exec -T backend mypy app
+          docker compose run --rm migrate
+          curl --fail http://localhost:8000/api/health/ready
+          curl --fail http://localhost:5173/api/health/ready
+          curl --fail http://localhost:5173/
+      - name: Logs
+        if: failure()
+        run: docker compose logs
+      - name: Stop services
+        if: always()
+        run: docker compose down
