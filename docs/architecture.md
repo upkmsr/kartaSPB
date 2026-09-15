@@ -17,9 +17,26 @@ Liveness не зависит от БД. Readiness возвращает 503 пр�
 Запросы синхронные: FastAPI выполняет их в thread pool.
 Ошибки подключения не раскрывают credentials в ответах или журналах.
 
-## Границы этапа
+## SPRINT 1 — Минимальная карта
 
-MapLibre GL JS остаётся выбранным движком для SPRINT 1.
-Поставщик тайлов ещё не выбран, внешних API и геоданных нет.
-Дальнейшие UI, application logic, map adapter и providers будут разделены.
-CORE + MODULES сохраняется; преждевременных моделей и пустых реализаций модулей нет.
+- `frontend/src/config/map.ts`: начальный viewport, URL style JSON и attribution.
+  Источник можно заменить на другой MapLibre-совместимый, в том числе same-origin
+  self-hosted style, изменив конфигурацию и пересобрав frontend.
+- `frontend/src/domain/mapObject.ts`: GeoJSON-based `MapObject`, `ObjectProperties`,
+  `SelectedObject`; типы предметной области не зависят от MapLibre.
+- `frontend/src/data/demo/point.json`: ровно один fixture с устойчивым ID.
+- `frontend/src/map/mapLibreAdapter.ts`: MapLibre instance, viewport, controls,
+  GeoJSON source, circle layer, map events. Клик передаёт только ID.
+- `frontend/src/components/MapView.tsx`: DOM container, lifecycle, ResizeObserver,
+  сообщения загрузки/ошибки. Unmount вызывает `map.remove()`; обычный rerender,
+  смена callback и открытие/закрытие карточки не пересоздают карту.
+- `App.tsx`: определяет объект по ID из собственного demo dataset и хранит
+  `selectedObject`. Свойства из map event не становятся содержимым карточки.
+- `ObjectCard.tsx`: отдельная React-карточка. Закрытие сбрасывает `selectedObject`
+  в `null`. На mobile высота ограничена, содержимое прокручивается; attribution
+  и навигационные controls остаются доступными.
+
+Basemap и demo source разделены. Клик не делает API/геокодирование или запрос БД.
+Внешняя подложка разрешена текущей командой владельца как временное development
+решение; полноценный offline runtime пока не реализован. Backend и миграции
+спринта 0 не изменены. CORE + MODULES сохраняется; следующие модули не создаются.

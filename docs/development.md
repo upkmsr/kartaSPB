@@ -81,3 +81,23 @@ PostgreSQL License (PostgreSQL), GPL-2.0-or-later (PostGIS).
 
 Образ PostGIS запускается как linux/amd64; на Apple Silicon нужна поддержка
 эмуляции Docker. CI проверяет весь Compose на Ubuntu, включая повторный upgrade.
+
+## Проверки SPRINT 1
+
+`npm test` включает React tests в jsdom: mock только MapLibre/WebGL boundary,
+настоящие adapter, выбор по ID, `selectedObject`, карточка и close проверяются
+вместе. Проверяется также StrictMode cleanup, смена callback без пересоздания
+карты, неизвестный ID и сообщение о сбое basemap.
+
+В реальном браузере после `docker compose up --build --wait`:
+
+1. Открыть `http://localhost:5173/` на 1280×800 и 390×844 с WebGL и интернетом.
+2. Дождаться улиц/воды Петербурга, мятной точки и attribution источников.
+3. Нажать точку: видны название, `demo`, описание, `demo-object-1`.
+4. Закрыть карточку кнопкой ×; повторить выбор. Начальный viewport сохраняется.
+5. На mobile проверить touch, отсутствие горизонтального overflow, доступность
+   controls и attribution, прокрутку содержимого карточки при необходимости.
+6. После загрузки отключить сеть: выбор и закрытие карточки продолжают работать.
+
+Браузерный QA проверяет настоящий WebGL, а не unit mock. Playwright и временные
+снимки для разовой проверки не являются зависимостями или artifacts репозитория.

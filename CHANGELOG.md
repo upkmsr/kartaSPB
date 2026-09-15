@@ -9,3 +9,10 @@
 - Документация архитектуры, запуска и границ спринта.
 - Исправлена гонка между временным PostgreSQL при первом init и Alembic job.
 - Docker/PostGIS, миграция, HTTP proxy и persistent volume приняты на реальном стеке.
+
+## 0.2.0 — SPRINT 1
+
+- Добавлена минимальная карта Санкт-Петербурга на MapLibre GL JS.
+- Временная OpenFreeMap development-подложка вынесена в заменяемую конфигурацию.
+- Добавлены один demo GeoJSON Point, выбор по stable ID и React-карточка.
+- Добавлены lifecycle, error и responsive состояния карты и frontend tests.

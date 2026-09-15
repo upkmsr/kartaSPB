@@ -6,8 +6,10 @@ Master Specification: [KARTASPB_AI_AGENT_SPEC.md](KARTASPB_AI_AGENT_SPEC.md).
 ## Текущий этап
 
 SPRINT 0 — Repository & Architecture завершён и принят в Docker/PostGIS.
-Карта начинается в SPRINT 1 и пока не реализована.
-Стек карты зафиксирован: MapLibre GL JS + OSM/open geodata + GeoJSON/PostGIS.
+SPRINT 1 — минимальная карта Санкт-Петербурга на MapLibre GL JS:
+нажмите на мятную demo-точку, чтобы открыть React-карточку; закройте её кнопкой ×.
+Стек карты: MapLibre GL JS + OSM/open geodata + GeoJSON/PostGIS.
+Демонстрационная точка не является реальным городским объектом и не сохраняется в БД.
 
 ## Запуск
 
@@ -21,6 +23,9 @@ docker compose up --build --wait
 `.env.example` для первого запуска не требуется. Для собственной конфигурации
 скопируйте его в `.env` и измените значения. Первый запуск требует интернета для
 загрузки образов и зависимостей.
+В SPRINT 1 бесплатная development-подложка OpenFreeMap требует интернета для
+стиля и тайлов. Конфигурация источника: `frontend/src/config/map.ts`;
+условия и attribution: [источники данных](docs/data-sources.md).
 
 - Интерфейс: http://localhost:5173
 - API docs: http://localhost:8000/docs

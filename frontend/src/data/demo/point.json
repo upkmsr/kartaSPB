@@ -1,0 +1,14 @@
+{
+  "type": "Feature",
+  "id": "demo-object-1",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [30.3158, 59.9391]
+  },
+  "properties": {
+    "id": "demo-object-1",
+    "name": "Тестовый объект",
+    "category": "demo",
+    "description": "Демонстрационная точка для проверки карты и карточки. Не является реальным городским объектом."
+  }
+}
