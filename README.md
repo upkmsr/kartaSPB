@@ -5,8 +5,8 @@ Master Specification: [KARTASPB_AI_AGENT_SPEC.md](KARTASPB_AI_AGENT_SPEC.md).
 
 ## Текущий этап
 
-SPRINT 0 — Repository & Architecture. Реализован каркас, приёмка Docker/PostGIS
-ожидает окружения с Docker. Карта начинается в SPRINT 1 и пока не реализована.
+SPRINT 0 — Repository & Architecture завершён и принят в Docker/PostGIS.
+Карта начинается в SPRINT 1 и пока не реализована.
 Стек карты зафиксирован: MapLibre GL JS + OSM/open geodata + GeoJSON/PostGIS.
 
 ## Запуск
@@ -14,12 +14,13 @@ SPRINT 0 — Repository & Architecture. Реализован каркас, пр�
 Нужен Docker с Compose v2. Из корня репозитория:
 
 ```bash
-cp .env.example .env
-docker compose up --build
+docker compose up --build --wait
 ```
 
-Также поддерживается `docker compose up` с локальными значениями по умолчанию.
-Первый запуск требует интернета для образов и зависимостей.
+Команда использует локальные значения по умолчанию, поэтому копировать
+`.env.example` для первого запуска не требуется. Для собственной конфигурации
+скопируйте его в `.env` и измените значения. Первый запуск требует интернета для
+загрузки образов и зависимостей.
 
 - Интерфейс: http://localhost:5173
 - API docs: http://localhost:8000/docs
@@ -37,6 +38,7 @@ Compose ждёт БД, выполняет `alembic upgrade head`, затем з�
 docker compose run --rm backend pytest
 docker compose run --rm -e RUN_DB_TESTS=1 backend pytest -m integration
 docker compose run --rm backend ruff check .
+docker compose run --rm backend ruff format --check .
 docker compose run --rm backend mypy app
 cd frontend
 npm ci

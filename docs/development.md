@@ -40,11 +40,19 @@ Downgrade убирает запись Alembic, но намеренно сохр�
 Проверить в Compose:
 
 ```bash
+docker compose up --build --wait
+docker compose ps
 docker compose run --rm migrate
 docker compose run --rm migrate
+docker compose exec backend alembic current
+docker compose exec backend alembic heads
 docker compose exec db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT PostGIS_Version();"'
 docker compose run --rm -e RUN_DB_TESTS=1 backend pytest -m integration
 ```
+
+`migrate` — одноразовый обязательный сервис: после успешного выполнения его
+нормальное состояние в `docker compose ps -a` — `Exited (0)`. Остальные сервисы
+(`db`, `backend`, `frontend`) должны быть `healthy`.
 
 ## Зависимости
 

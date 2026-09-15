@@ -9,7 +9,13 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: [CMD-SHELL, 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      # First-time initialization briefly starts a temporary PostgreSQL process.
+      # Wait for the final server (PID 1) to avoid racing its restart.
+      test:
+        [
+          CMD-SHELL,
+          'test "$$(head -n 1 "$${PGDATA}/postmaster.pid" 2>/dev/null)" = "1" && pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"',
+        ]
       interval: 5s
       timeout: 5s
       retries: 12

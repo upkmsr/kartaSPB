@@ -7,4 +7,5 @@
 - Docker Compose, PostgreSQL/PostGIS, Alembic migration job.
 - Unit/API tests, opt-in PostGIS integration test, lint/typecheck и dependency locks.
 - Документация архитектуры, запуска и границ спринта.
-- Docker/PostGIS и визуальная приёмка ещё требуют проверки; см. docs/sprint-0.md.
+- Исправлена гонка между временным PostgreSQL при первом init и Alembic job.
+- Docker/PostGIS, миграция, HTTP proxy и persistent volume приняты на реальном стеке.

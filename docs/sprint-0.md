@@ -25,8 +25,8 @@ README для `modules/`, `data/`, `infra/`, `scripts/`, `tests/`.
 ## Миграции
 
 `0001_postgis`: `CREATE EXTENSION IF NOT EXISTS postgis`.
-Offline SQL сгенерирован успешно. Применение к реальному PostGIS не подтверждено:
-Docker и сервер PostgreSQL в текущем окружении отсутствуют.
+Применена к реальному PostgreSQL 17/PostGIS 3.5. `alembic current` и
+`alembic heads` возвращают `0001_postgis (head)`.
 
 ## API
 
@@ -37,29 +37,28 @@ Docker и сервер PostgreSQL в текущем окружении отсу�
 
 ## Проверки
 
-- backend: PASS — Uvicorn запущен, реальный HTTP liveness 200.
-- frontend: PASS — Vite запущен, HTTP 200; production build успешен.
-- proxy: PASS — `/api/health/ready` через frontend возвращает ожидаемый 503 без БД.
-- tests: PASS — backend 4, frontend 4; один PostGIS integration test SKIPPED.
+- Docker Compose: PASS — чистый `docker compose up --build --wait`.
+- PostgreSQL/PostGIS: PASS — контейнер healthy, `PostGIS_Version()` = 3.5.
+- backend: PASS — контейнер healthy; live и ready возвращают HTTP 200.
+- frontend: PASS — контейнер healthy, HTTP 200, proxy readiness HTTP 200.
+- persistent volume: PASS — маркер сохранился после `docker compose down` и повторного запуска.
+- tests: PASS — backend 5 (включая PostGIS integration), frontend 4, без skip.
 - lint: PASS — Ruff и ESLint.
 - typecheck: PASS — mypy и TypeScript.
-- migration SQL: PASS — Alembic offline generation.
+- migration: PASS — Alembic current совпадает с head; повторный upgrade успешен.
 - npm audit при установке: 0 известных уязвимостей.
 - UI: проверены снимки Firefox desktop 1280×800 и mobile 390×844;
   они подтверждают вёрстку начального состояния, но не весь интерактивный сценарий.
-- Docker Compose / PostGIS integration: BLOCKED — Docker отсутствует.
 - git diff проверен; diff --check чист для реализации. В исходном ТЗ сохранены
   четыре Markdown line breaks (trailing spaces).
-- CI workflow добавлен, но удалённый запуск в рамках этой работы не выполнялся.
+- CI workflow добавлен; его проверки воспроизведены локально.
 
 ## Известные ограничения
 
-Полная приёмка SPRINT 0 остаётся открытой до `docker compose up --build --wait`
-и интеграционных проверок по docs/development.md в окружении с Docker.
-Реальный успешный статус БД и применение миграций нельзя считать проверенными.
+Одноразовый сервис `migrate` после успеха имеет ожидаемый статус `Exited (0)`;
+постоянные сервисы `db`, `backend`, `frontend` имеют статус healthy.
 Карта и datasets ещё не реализованы; стек MapLibre/OSM/GeoJSON/PostGIS сохранён.
 
 ## Следующий рекомендуемый этап
 
-Завершить Docker/PostGIS-приёмку SPRINT 0. После неё, только по команде владельца:
-SPRINT 1 — Минимальная карта.
+Только по отдельной команде владельца: SPRINT 1 — Минимальная карта.
