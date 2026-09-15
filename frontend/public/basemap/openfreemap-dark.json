@@ -1,0 +1,21 @@
+{
+  "version": 8,
+  "name": "KARTASPB OpenFreeMap dark",
+  "sources": {
+    "openfreemap": {
+      "type": "vector",
+      "tiles": ["https://tiles.openfreemap.org/planet/{z}/{x}/{y}.pbf"],
+      "minzoom": 0,
+      "maxzoom": 14,
+      "attribution": "OpenFreeMap © OpenMapTiles · Data from OpenStreetMap"
+    }
+  },
+  "layers": [
+    { "id": "background", "type": "background", "paint": { "background-color": "#0b111b" } },
+    { "id": "landcover", "type": "fill", "source": "openfreemap", "source-layer": "landcover", "paint": { "fill-color": "#16251f", "fill-opacity": 0.55 } },
+    { "id": "landuse", "type": "fill", "source": "openfreemap", "source-layer": "landuse", "paint": { "fill-color": "#17212b", "fill-opacity": 0.65 } },
+    { "id": "water", "type": "fill", "source": "openfreemap", "source-layer": "water", "paint": { "fill-color": "#102d3d" } },
+    { "id": "buildings", "type": "fill", "source": "openfreemap", "source-layer": "building", "minzoom": 12, "paint": { "fill-color": "#27323c", "fill-opacity": 0.7 } },
+    { "id": "roads", "type": "line", "source": "openfreemap", "source-layer": "transportation", "paint": { "line-color": "#53606c", "line-opacity": 0.65, "line-width": ["interpolate", ["linear"], ["zoom"], 8, 0.4, 14, 2.2] } }
+  ]
+}

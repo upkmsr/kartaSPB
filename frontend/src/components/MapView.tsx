@@ -2,27 +2,41 @@ import { useEffect, useRef, useState } from 'react';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { mapConfig } from '../config/map';
 import { demoObjects } from '../data/demo';
+import { districtFeatureCollection } from '../data/districts';
+import type { DistrictId } from '../domain/district';
+import type { LayerRegistry } from '../domain/layers';
 import { createMap } from '../map/mapLibreAdapter';
 
 interface MapViewProps {
   onObjectClick: (id: string) => void;
+  onDistrictClick: (id: DistrictId) => void;
+  selectedDistrictIds: readonly DistrictId[];
+  layers: LayerRegistry;
 }
 
-export function MapView({ onObjectClick }: MapViewProps) {
+export function MapView({ onObjectClick, onDistrictClick, selectedDistrictIds, layers }: MapViewProps) {
   const container = useRef<HTMLDivElement>(null);
   const onClick = useRef(onObjectClick);
+  const onDistrict = useRef(onDistrictClick);
+  const adapter = useRef<ReturnType<typeof createMap> | undefined>(undefined);
+  const initialSelection = useRef(selectedDistrictIds);
+  const initialLayers = useRef(layers);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 
   useEffect(() => { onClick.current = onObjectClick; }, [onObjectClick]);
+  useEffect(() => { onDistrict.current = onDistrictClick; }, [onDistrictClick]);
+  useEffect(() => { adapter.current?.setSelectedDistricts(selectedDistrictIds); }, [selectedDistrictIds]);
+  useEffect(() => { adapter.current?.setLayers(layers); }, [layers]);
   useEffect(() => {
     if (!container.current) return;
-    let adapter: ReturnType<typeof createMap> | undefined;
+    let mapAdapter: ReturnType<typeof createMap> | undefined;
     let observer: ResizeObserver | undefined;
     let active = true;
     const timeout = window.setTimeout(() => setStatus('error'), 20000);
     try {
-      adapter = createMap(container.current, mapConfig, demoObjects, {
+      mapAdapter = createMap(container.current, mapConfig, demoObjects, districtFeatureCollection, {
         onObjectClick: (id) => { if (active) onClick.current(id); },
+        onDistrictClick: (id) => { if (active) onDistrict.current(id); },
         onReady: () => {
           window.clearTimeout(timeout);
           if (active) setStatus('ready');
@@ -32,7 +46,10 @@ export function MapView({ onObjectClick }: MapViewProps) {
           if (active) setStatus('error');
         },
       });
-      observer = new ResizeObserver(() => adapter?.resize());
+      adapter.current = mapAdapter;
+      mapAdapter.setSelectedDistricts(initialSelection.current);
+      mapAdapter.setLayers(initialLayers.current);
+      observer = new ResizeObserver(() => mapAdapter?.resize());
       observer.observe(container.current);
     } catch {
       window.clearTimeout(timeout);
@@ -42,7 +59,8 @@ export function MapView({ onObjectClick }: MapViewProps) {
       active = false;
       window.clearTimeout(timeout);
       observer?.disconnect();
-      adapter?.remove();
+      mapAdapter?.remove();
+      adapter.current = undefined;
     };
   }, []);
 

@@ -1,0 +1,31 @@
+export type ProjectLayerId = 'districts' | 'demo-object';
+
+export interface LayerDefinition {
+  id: ProjectLayerId;
+  name: string;
+  visible: boolean;
+  opacity: number;
+  order: number;
+}
+
+export type LayerRegistry = Record<ProjectLayerId, LayerDefinition>;
+
+export const initialLayerRegistry: LayerRegistry = {
+  districts: { id: 'districts', name: 'Районы', visible: true, opacity: 0.7, order: 10 },
+  'demo-object': { id: 'demo-object', name: 'Тестовый объект', visible: true, opacity: 1, order: 20 },
+};
+
+export function updateLayer(
+  registry: LayerRegistry,
+  id: ProjectLayerId,
+  patch: Partial<Pick<LayerDefinition, 'visible' | 'opacity'>>,
+): LayerRegistry {
+  const opacity = patch.opacity === undefined
+    ? registry[id].opacity
+    : Math.min(1, Math.max(0, patch.opacity));
+  return { ...registry, [id]: { ...registry[id], ...patch, opacity } };
+}
+
+export function orderedLayers(registry: LayerRegistry): LayerDefinition[] {
+  return Object.values(registry).sort((left, right) => left.order - right.order);
+}

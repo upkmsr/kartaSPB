@@ -19,7 +19,9 @@ Liveness не зависит от БД. Readiness возвращает 503 пр�
 
 ## SPRINT 1 — Минимальная карта
 
-- `frontend/src/config/map.ts`: начальный viewport, URL style JSON и attribution.
+- `frontend/src/config/map.ts`: начальный viewport, same-origin URL style JSON и attribution.
+  Минимальный dark style находится в `frontend/public/basemap/`, а внешний vector
+  source остаётся заменяемым через style config.
   Источник можно заменить на другой MapLibre-совместимый, в том числе same-origin
   self-hosted style, изменив конфигурацию и пересобрав frontend.
 - `frontend/src/domain/mapObject.ts`: GeoJSON-based `MapObject`, `ObjectProperties`,
@@ -40,3 +42,20 @@ Basemap и demo source разделены. Клик не делает API/гео
 Внешняя подложка разрешена текущей командой владельца как временное development
 решение; полноценный offline runtime пока не реализован. Backend и миграции
 спринта 0 не изменены. CORE + MODULES сохраняется; следующие модули не создаются.
+
+## SPRINT 2 — Районы и слои
+
+- `frontend/src/data/districts/` содержит локальный GeoJSON-снимок 18 районов.
+  UI зависит от типизированного `District[]`, поэтому статический адаптер можно
+  позже заменить узким API/PostGIS-репозиторием без изменения компонентов.
+- `App.tsx` хранит `selectedDistrictIds` и `LayerRegistry` как единственные
+  источники application state. MapLibre получает ID и передаёт клики обратно;
+  собственное несинхронизированное состояние выбора в карте не создаётся.
+- `domain/layers.ts` задаёт стабильные `districts` и `demo-object`, их visibility,
+  opacity и order. Реестр обновляется чистыми функциями и не зависит от DOM.
+- Map adapter создаёт отдельные GeoJSON sources и слои `district-fill`,
+  `district-outline`, `demo-points`, `district-selected`. Порядок описан в одном
+  месте. Выбор обновляет filter/paint, а visibility и opacity — layout/paint;
+  MapLibre instance при этих действиях не пересоздаётся.
+- При пустом выборе используется нейтральная заливка. При выборе MapLibre
+  expression сохраняет выбранные полигоны светлыми и затемняет остальные.

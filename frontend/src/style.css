@@ -15,11 +15,27 @@ button:focus-visible { outline: 3px solid #77dfcc; outline-offset: 3px; }
 .map-workspace { position: relative; flex: 1; min-height: 0; }
 .map-pane, .map-container { position: absolute; inset: 0; }
 .map-container { background: #111d28; }
-.map-intro { position: absolute; top: 24px; left: 24px; max-width: calc(100% - 90px); padding: 20px 24px; background: #0b111bed; border: 1px solid #31434d; border-radius: 8px; pointer-events: none; }
+.map-intro { position: absolute; top: 24px; left: 344px; max-width: calc(100% - 434px); padding: 20px 24px; background: #0b111bed; border: 1px solid #31434d; border-radius: 8px; pointer-events: none; }
 .eyebrow { color: #77dfcc; font-size: 10px; letter-spacing: .15em; margin: 0 0 10px; }
 h1 { font-size: clamp(22px, 2.2vw, 30px); letter-spacing: -.035em; margin: 0 0 10px; font-weight: 600; }
 .map-intro > p:not(.eyebrow) { color: #b7c4d5; font-size: 13px; line-height: 1.6; margin: 0 0 14px; }
 .demo-badge { color: #89a6b1; font-size: 10px; letter-spacing: .04em; }
+.district-panel { position: absolute; z-index: 2; top: 24px; left: 24px; width: 296px; max-height: calc(100% - 76px); overflow: auto; border: 1px solid #31434d; border-radius: 8px; background: #0b111bf2; box-shadow: 0 14px 40px #0004; }
+.district-panel details + details { border-top: 1px solid #31434d; }
+.district-panel summary { display: flex; justify-content: space-between; padding: 14px 16px; color: #e5edf5; font-size: 13px; font-weight: 700; cursor: pointer; }
+.district-panel summary span { color: #77dfcc; font-weight: 500; }
+.panel-section { padding: 0 16px 14px; }
+.panel-heading { display: flex; min-height: 32px; align-items: center; justify-content: space-between; gap: 8px; color: #9fb0c0; font-size: 11px; }
+.panel-heading button { min-height: 32px; padding: 5px 8px; font-size: 11px; }
+.panel-heading button:disabled { cursor: default; opacity: .45; }
+.district-list { max-height: min(34vh, 280px); overflow: auto; padding-right: 4px; }
+.district-list label, .layer-control > label { display: flex; min-height: 32px; align-items: center; gap: 9px; color: #c9d5df; font-size: 12px; cursor: pointer; }
+.district-panel input[type="checkbox"] { width: 17px; height: 17px; accent-color: #77dfcc; }
+.district-panel input:focus-visible { outline: 3px solid #77dfcc; outline-offset: 2px; }
+.layer-control + .layer-control { margin-top: 9px; padding-top: 9px; border-top: 1px solid #273641; }
+.opacity-control { display: block; color: #91a5b4; font-size: 10px; }
+.opacity-control span { display: block; margin: 5px 0 3px 26px; }
+.opacity-control input { width: calc(100% - 26px); margin-left: 26px; accent-color: #77dfcc; }
 .object-card { position: absolute; right: 24px; bottom: 48px; width: 340px; max-width: calc(100% - 48px); max-height: calc(100% - 110px); overflow-y: auto; padding: 20px; border: 1px solid #5c9290; border-radius: 10px; background: #0e1a25f5; box-shadow: 0 14px 40px #0005; }
 .card-heading { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
 .card-heading .eyebrow { margin: 0; }
@@ -39,7 +55,7 @@ h1 { font-size: clamp(22px, 2.2vw, 30px); letter-spacing: -.035em; margin: 0 0 1
   .brand { font-size: 20px; }
   .region { flex-basis: 100%; order: 2; font-size: 11px; }
   .status { font-size: 10px; gap: 6px; }
-  .map-intro { top: 14px; left: 14px; padding: 14px 16px; }
+  .map-intro { top: 14px; left: 14px; max-width: calc(100% - 84px); padding: 12px 14px; }
   .map-intro .eyebrow { display: none; }
   .map-intro h1 { font-size: 21px; margin-bottom: 6px; }
   .map-intro > p:not(.eyebrow) { font-size: 12px; margin-bottom: 8px; }
@@ -48,4 +64,8 @@ h1 { font-size: clamp(22px, 2.2vw, 30px); letter-spacing: -.035em; margin: 0 0 1
   .object-card dl > div { padding: 8px 0; }
   .app-footer { padding: 10px 16px; font-size: 9px; letter-spacing: 0; }
   .map-notice { left: 14px; bottom: 42px; }
+  .district-panel { top: auto; bottom: 82px; left: 14px; width: min(286px, calc(100% - 28px)); max-height: 45%; }
+  .district-panel details[open]:first-child ~ details { display: none; }
+  .district-list { max-height: 25vh; }
+  .object-card { z-index: 3; }
 }

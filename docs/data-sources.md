@@ -5,8 +5,11 @@
 Проверено 2026-09-15:
 
 - Provider: [OpenFreeMap](https://openfreemap.org/), публичный бесплатный instance.
-- Style: `https://tiles.openfreemap.org/styles/dark`, MapLibre Style Specification v8.
-- Vector TileJSON: `https://tiles.openfreemap.org/planet` (точный URL тайлов задаёт provider).
+- Style: same-origin `/basemap/openfreemap-dark.json`, MapLibre Style Specification
+  v8, with a replaceable OpenFreeMap vector source. The local style avoids making
+  project-layer initialization depend on remote sprites, glyphs or style JSON.
+- Vector tiles: replaceable template `https://tiles.openfreemap.org/planet/{z}/{x}/{y}.pbf`
+  в локальном style JSON.
 - Данные: OpenStreetMap, схема OpenMapTiles; на малых zoom также Natural Earth.
 - Attribution: OpenFreeMap · © OpenMapTiles · Data from OpenStreetMap.
   MapLibre AttributionControl показывает её полностью, включая на mobile;
@@ -52,3 +55,29 @@ TypeScript-типы; не требует React wrapper, платного API и�
 При установке npm audit: 0 известных уязвимостей. JS bundle с картой около
 345 kB gzip; Vite предупреждает о размере raw chunk >500 kB. Предупреждение
 не скрывается; оптимизация производительности не расширяет текущий спринт.
+
+## SPRINT 2 — административные районы Санкт-Петербурга
+
+Development dataset: `frontend/src/data/districts/spb-districts.json`.
+
+- Геометрии получены 2026-09-15 одним lookup-запросом Nominatim из 18 отношений
+  OpenStreetMap `admin_level=5`, перечисленных на странице
+  [«Районы Санкт-Петербурга»](https://wiki.openstreetmap.org/wiki/RU:%D0%A1%D0%B0%D0%BD%D0%BA%D1%82-%D0%9F%D0%B5%D1%82%D0%B5%D1%80%D0%B1%D1%83%D1%80%D0%B3/%D0%A0%D0%B0%D0%B9%D0%BE%D0%BD%D1%8B).
+- Использованы relation IDs: 1114193, 1114252, 1114354, 1114806, 1114809,
+  337424, 1114895, 363103, 1115082, 1115366, 338636, 368287, 1114905,
+  367375, 1115367, 338635, 369514, 1114902. ID приложения имеет форму
+  `district-osm-relation-<relation id>` и не зависит от названия.
+- Snapshot содержит ровно 18 объектов: 15 Polygon и 3 MultiPolygon. Названия
+  сверены с перечнем районов; длинные display address Nominatim удалены.
+- Source: © OpenStreetMap contributors. License: [ODbL 1.0](https://www.openstreetmap.org/copyright).
+  Attribution показывается в MapLibre AttributionControl.
+- Nominatim использован только для однократного получения малого набора с
+  собственным User-Agent согласно [Usage Policy](https://operations.osmfoundation.org/policies/nominatim/).
+  Приложение не обращается к Nominatim в runtime.
+- Свежесть — состояние OpenStreetMap на дату получения. Автоматическое обновление
+  и гарантия официальной актуальности отсутствуют. Перед production-use требуется
+  сверка с официальным реестром и воспроизводимый import/update process; это не
+  входит в SPRINT 2.
+
+GeoJSON является временным development snapshot. Его source boundary изолирован
+в `data/districts/index.ts`, что позволяет в будущем заменить загрузку API/PostGIS.

@@ -10,13 +10,12 @@ export interface MapConfig {
   style: MapStyleConfig;
 }
 
-// Development basemap. Replace URL and attribution together for another source.
-// Local styles must also use local tiles, glyphs and sprites to work offline.
+// Development basemap. The style is same-origin; its vector source remains replaceable.
 export const mapConfig: MapConfig = {
   center: [30.3158, 59.9391],
   zoom: 12,
   style: {
-    url: 'https://tiles.openfreemap.org/styles/dark',
+    url: '/basemap/openfreemap-dark.json',
     attribution:
       '<a href="https://openfreemap.org">OpenFreeMap</a> ' +
       '<a href="https://www.openmaptiles.org/">&copy; OpenMapTiles</a> ' +

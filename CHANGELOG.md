@@ -1,5 +1,11 @@
 # Changelog
 
+## SPRINT 2
+
+- Added all 18 Saint Petersburg district geometries from an OSM-derived local snapshot.
+- Added synchronized district multi-selection, dimming, visibility, opacity, and deterministic layer ordering.
+- Added accessible responsive controls and source/license documentation.
+
 ## 0.1.0 — SPRINT 0
 
 - React/TypeScript shell с реальной проверкой доступности API.
