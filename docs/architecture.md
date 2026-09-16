@@ -1,5 +1,14 @@
 # Архитектура
 
+## SPRINT 6 — Base OSM/Open Geodata
+
+`app.open_data.overpass` is a bounded source adapter, separate from the basemap.
+It reads a local raw snapshot for deterministic initial/repeat imports and can
+explicitly refresh that snapshot query from Overpass. Provider element type/ID is
+the identity; the shared pipeline stores raw payload, validates geometry, upserts
+canonical objects and records statistics/provenance. Normal application runtime
+reads PostGIS only.
+
 ## SPRINT 5 — Data Ingestion Framework
 
 Любой внешний dataset проходит одинаковую границу: source adapter → immutable raw

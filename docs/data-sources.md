@@ -1,5 +1,26 @@
 # Источники данных
 
+## SPRINT 6 — bounded OpenStreetMap import
+
+- Source: OpenStreetMap through `https://overpass-api.de/api/interpreter`.
+- License: ODbL 1.0; attribution: © OpenStreetMap contributors.
+- Collection: bounded Overpass QL query inside OSM area `3600337422`
+  (Санкт-Петербург), limited to `boundary=administrative`, `admin_level=5`.
+- Snapshot: `backend/app/open_data/snapshots/spb_district_centers.json`, collected
+  2026-09-16. It contains 18 relation records and provider metadata. The importer
+  uses real relation IDs and provider-computed centers; it does not manufacture
+  coordinates.
+- Refresh: `python -m app.open_data --refresh` performs the same bounded query;
+  `python -m app.open_data` repeats the checked-in snapshot offline. Both use the
+  SPRINT 5 pipeline and deterministic `osm-overpass-relation-<id>` IDs.
+- Known limitation: the SPRINT 6 dataset intentionally stores district centers,
+  not complete OSM geometry or the planet extract. The public Overpass instance
+  has usage limits and no SLA. Larger production imports should use a regional
+  PBF extract (for example Geofabrik) and local processing.
+
+This dataset is separate from OpenFreeMap vector tiles and is never requested by
+MapLibre during pan or zoom.
+
 ## Source registry (SPRINT 5)
 
 Внешний источник допускается в importer только после регистрации URL, лицензии,

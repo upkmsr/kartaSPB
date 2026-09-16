@@ -1,5 +1,10 @@
 # Модули
 
+SPRINT 6 adds the `open_data` adapter. Its deliberately small base dataset has
+18 current OSM district relations represented by provider-computed center points.
+It exercises initial and repeatable imports without turning the repository into a
+production OSM mirror. Domain modules reuse the same adapter/pipeline boundary.
+
 SPRINT 5 добавляет общий ingestion CORE в `app/ingestion`. Он не содержит
 предметных данных. Новый адаптер обязан выдать raw payload и нормализованный
 `ImportRecord`, а pipeline выполняет staging, validation, idempotent upsert,

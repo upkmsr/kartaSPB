@@ -1,0 +1,485 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-09-16T06:32:25Z",
+    "timestamp_areas_base": "2026-09-15T17:29:01Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "relation",
+  "id": 337424,
+  "center": {
+    "lat": 59.7776308,
+    "lon": 30.5991242
+  },
+  "tags": {
+    "addr:country": "RU",
+    "addr:region": "Санкт-Петербург",
+    "admin_level": "5",
+    "boundary": "administrative",
+    "name": "Колпинский район",
+    "name:en": "Kolpinsky District",
+    "name:pl": "rejon kołpinski",
+    "name:ru": "Колпинский район",
+    "name:zh": "科尔皮诺区",
+    "name:zh-Hans": "科尔皮诺区",
+    "name:zh-Hant": "科爾皮諾區",
+    "type": "boundary",
+    "wikidata": "Q1326302",
+    "wikipedia": "ru:Колпинский район"
+  }
+},
+{
+  "type": "relation",
+  "id": 338635,
+  "center": {
+    "lat": 59.7315784,
+    "lon": 30.3972839
+  },
+  "tags": {
+    "addr:country": "RU",
+    "addr:region": "Санкт-Петербург",
+    "admin_level": "5",
+    "boundary": "administrative",
+    "name": "Пушкинский район",
+    "name:ca": "Districte de Púixkinski",
+    "name:en": "Pushkinsky District",
+    "name:pl": "rejon puszkinski",
+    "name:ru": "Пушкинский район",
+    "name:uk": "Пушкінський район",
+    "name:zh": "普希金区",
+    "name:zh-Hans": "普希金区",
+    "name:zh-Hant": "普希金區",
+    "ref": "40 294 501",
+    "type": "boundary",
+    "wikidata": "Q220316",
+    "wikipedia": "ru:Пушкинский район (Санкт-Петербург)"
+  }
+},
+{
+  "type": "relation",
+  "id": 338636,
+  "center": {
+    "lat": 59.8285997,
+    "lon": 30.2902134
+  },
+  "tags": {
+    "addr:country": "RU",
+    "addr:region": "Санкт-Петербург",
+    "admin_level": "5",
+    "boundary": "administrative",
+    "name": "Московский район",
+    "name:de": "Moskauer Rajon",
+    "name:en": "Moskovsky District",
+    "name:pl": "rejon moskiewski",
+    "name:ru": "Московский район",
+    "name:uk": "Московський район",
+    "name:zh": "莫斯科区",
+    "name:zh-Hans": "莫斯科区",
+    "name:zh-Hant": "莫斯科區",
+    "type": "boundary",
+    "wikidata": "Q270112",
+    "wikipedia": "ru:Московский район (Санкт-Петербург)"
+  }
+},
+{
+  "type": "relation",
+  "id": 363103,
+  "center": {
+    "lat": 59.7696330,
+    "lon": 30.1517550
+  },
+  "tags": {
+    "addr:country": "RU",
+    "addr:region": "Санкт-Петербург",
+    "admin_level": "5",
+    "boundary": "administrative",
+    "name": "Красносельский район",
+    "name:en": "Krasnoselsky District",
+    "name:pl": "rejon krasnosielski",
+    "name:ru": "Красносельский район",
+    "name:uk": "Красносільський район",
+    "name:zh": "红村区",
+    "name:zh-Hans": "红村区",
+    "name:zh-Hant": "紅村區",
+    "type": "boundary",
+    "wikidata": "Q270124",
+    "wikipedia": "ru:Красносельский район (Санкт-Петербург)"
+  }
+},
+{
+  "type": "relation",
+  "id": 367375,
+  "center": {
+    "lat": 59.8764420,
+    "lon": 29.8740671
+  },
+  "tags": {
+    "addr:country": "RU",
+    "addr:region": "Санкт-Петербург",
+    "admin_level": "5",
+    "boundary": "administrative",
+    "name": "Петродворцовый район",
+    "name:ca": "Districte de Petrodvorec",
+    "name:de": "Rajon Petrodworez",
+    "name:en": "Petrodvortsovy District",
+    "name:pl": "rejon pietrodworcowy",
+    "name:ru": "Петродворцовый район",
+    "name:zh": "彼得宫区",
+    "name:zh-Hans": "彼得宫区",
+    "name:zh-Hant": "彼得宫區",
+    "type": "boundary",
+    "wikidata": "Q270114",
+    "wikipedia": "ru:Петродворцовый район"
+  }
+},
+{
+  "type": "relation",
+  "id": 368287,
+  "center": {
+    "lat": 59.8723559,
+    "lon": 30.4652381
+  },
+  "tags": {
+    "addr:country": "RU",
+    "addr:region": "Санкт-Петербург",
+    "admin_level": "5",
+    "boundary": "administrative",
+    "name": "Невский район",
+    "name:en": "Nevsky District",
+    "name:pl": "rejon niewski",
+    "name:ru": "Невский район",
+    "name:uk": "Невський район",
+    "name:zh": "涅瓦区",
+    "name:zh-Hans": "涅瓦区",
+    "name:zh-Hant": "涅瓦區",
+    "type": "boundary",
+    "wikidata": "Q1193156",
+    "wikipedia": "ru:Невский район"
+  }
+},
+{
+  "type": "relation",
+  "id": 369514,
+  "center": {
+    "lat": 59.8663421,
+    "lon": 30.4038869
+  },
+  "tags": {
+    "addr:country": "RU",
+    "addr:region": "Санкт-Петербург",
+    "admin_level": "5",
+    "boundary": "administrative",
+    "name": "Фрунзенский район",
+    "name:en": "Frunzensky District",
+    "name:pl": "rejon frunzienski",
+    "name:ru": "Фрунзенский район",
+    "name:uk": "Фрунзенський район",
+    "name:zh": "伏龙芝区",
+    "name:zh-Hans": "伏龙芝区",
+    "name:zh-Hant": "伏龍芝區",
+    "type": "boundary",
+    "wikidata": "Q1142777",
+    "wikipedia": "ru:Фрунзенский район (Санкт-Петербург)"
+  }
+},
+{
+  "type": "relation",
+  "id": 1114193,
+  "center": {
+    "lat": 59.9185437,
+    "lon": 30.2964540
+  },
+  "tags": {
+    "addr:region": "Санкт-Петербург",
+    "admin_level": "5",
+    "boundary": "administrative",
+    "name": "Адмиралтейский район",
+    "name:en": "Admiralteysky District",
+    "name:pl": "rejon admirałtiejski",
+    "name:ru": "Адмиралтейский район",
+    "name:uk": "Адміралтейський район",
+    "name:zh": "海军部区",
+    "name:zh-Hans": "海军部区",
+    "name:zh-Hant": "海軍部區",
+    "type": "boundary",
+    "url": "http://www.gov.spb.ru/law?d&nd=8414528&nh=0&header=010000005200#I0",
+    "wikidata": "Q219746",
+    "wikipedia": "ru:Адмиралтейский район"
+  }
+},
+{
+  "type": "relation",
+  "id": 1114252,
+  "center": {
+    "lat": 59.9408180,
+    "lon": 30.2473668
+  },
+  "tags": {
+    "addr:country": "RU",
+    "addr:region": "Санкт-Петербург",
+    "admin_level": "5",
+    "boundary": "administrative",
+    "loc_name": "Васька",
+    "name": "Василеостровский район",
+    "name:en": "Vasileostrovsky District",
+    "name:pl": "rejon wasileostrowski",
+    "name:ru": "Василеостровский район",
+    "name:uk": "Василеостровський район",
+    "name:zh": "瓦西里岛区",
+    "name:zh-Hans": "瓦西里岛区",
+    "name:zh-Hant": "瓦西里島區",
+    "type": "boundary",
+    "url": "http://www.gov.spb.ru/law?d&nd=8414528&nh=0&header=010000005G00#I0",
+    "wikidata": "Q220622",
+    "wikipedia": "ru:Василеостровский район"
+  }
+},
+{
+  "type": "relation",
+  "id": 1114354,
+  "center": {
+    "lat": 60.0388262,
+    "lon": 30.2291034
+  },
+  "tags": {
+    "addr:country": "RU",
+    "addr:region": "Санкт-Петербург",
+    "admin_level": "5",
+    "boundary": "administrative",
+    "name": "Выборгский район",
+    "name:de": "Wyborger Rajon",
+    "name:en": "Vyborgsky District",
+    "name:fi": "Viipurin piiri",
+    "name:pl": "rejon wyborgski",
+    "name:ru": "Выборгский район",
+    "name:uk": "Виборзький район",
+    "name:zh": "维堡区",
+    "name:zh-Hans": "维堡区",
+    "name:zh-Hant": "維堡區",
+    "source": "http://gov.spb.ru/law?d&nd=8414528&nh=1",
+    "type": "boundary",
+    "wikidata": "Q219907",
+    "wikipedia": "ru:Выборгский район (Санкт-Петербург)"
+  }
+},
+{
+  "type": "relation",
+  "id": 1114806,
+  "center": {
+    "lat": 60.0051732,
+    "lon": 30.3930750
+  },
+  "tags": {
+    "addr:country": "RU",
+    "addr:region": "Санкт-Петербург",
+    "admin_level": "5",
+    "boundary": "administrative",
+    "name": "Калининский район",
+    "name:de": "Kalinin-Rajon",
+    "name:en": "Kalininsky District",
+    "name:pl": "rejon kalininski",
+    "name:ru": "Калининский район",
+    "name:uk": "Калінінський район",
+    "name:zh": "加里宁区",
+    "name:zh-Hans": "加里宁区",
+    "name:zh-Hant": "加里寧區",
+    "source": "http://gov.spb.ru/law?d&nd=8414528&nh=1",
+    "type": "boundary",
+    "wikidata": "Q1267403",
+    "wikipedia": "ru:Калининский район (Санкт-Петербург)"
+  }
+},
+{
+  "type": "relation",
+  "id": 1114809,
+  "center": {
+    "lat": 59.8699165,
+    "lon": 30.2307669
+  },
+  "tags": {
+    "addr:country": "RU",
+    "addr:region": "Санкт-Петербург",
+    "admin_level": "5",
+    "boundary": "administrative",
+    "name": "Кировский район",
+    "name:en": "Kirovsky District",
+    "name:pl": "rejon kirowski",
+    "name:ru": "Кировский район",
+    "name:uk": "Кіровський район",
+    "name:zh": "基洛夫区",
+    "name:zh-Hans": "基洛夫区",
+    "name:zh-Hant": "基洛夫區",
+    "type": "boundary",
+    "url": "http://www.gov.spb.ru/law?d&nd=8414528&nh=0&header=010000006V00#I0",
+    "wikidata": "Q219745",
+    "wikipedia": "ru:Кировский район (Санкт-Петербург)"
+  }
+},
+{
+  "type": "relation",
+  "id": 1114895,
+  "center": {
+    "lat": 59.9781884,
+    "lon": 30.4801554
+  },
+  "tags": {
+    "addr:country": "RU",
+    "addr:region": "Санкт-Петербург",
+    "admin_level": "5",
+    "boundary": "administrative",
+    "name": "Красногвардейский район",
+    "name:en": "Krasnogvardeysky District",
+    "name:pl": "rejon krasnogwardiejski",
+    "name:ru": "Красногвардейский район",
+    "name:uk": "Червоногвардійський район",
+    "name:zh": "赤卫队区",
+    "name:zh-Hans": "赤卫队区",
+    "name:zh-Hant": "赤衛隊區",
+    "source": "http://gov.spb.ru/law?d&nd=8414528&nh=1",
+    "type": "boundary",
+    "wikidata": "Q1142579",
+    "wikipedia": "ru:Красногвардейский район (Санкт-Петербург)"
+  }
+},
+{
+  "type": "relation",
+  "id": 1114902,
+  "center": {
+    "lat": 59.9358864,
+    "lon": 30.3556982
+  },
+  "tags": {
+    "addr:country": "RU",
+    "addr:region": "Санкт-Петербург",
+    "admin_level": "5",
+    "boundary": "administrative",
+    "name": "Центральный район",
+    "name:en": "Tsentralny District",
+    "name:pl": "rejon centralny",
+    "name:ru": "Центральный район",
+    "name:uk": "Центральний район",
+    "name:zh": "中央区",
+    "name:zh-Hans": "中央区",
+    "name:zh-Hant": "中央區",
+    "type": "boundary",
+    "url": "http://www.gov.spb.ru/law?d&nd=8414528&nh=0&header=010000004N01#I0",
+    "wikidata": "Q271014",
+    "wikipedia": "ru:Центральный район (Санкт-Петербург)"
+  }
+},
+{
+  "type": "relation",
+  "id": 1114905,
+  "center": {
+    "lat": 59.9642160,
+    "lon": 30.2777746
+  },
+  "tags": {
+    "addr:country": "RU",
+    "addr:region": "Санкт-Петербург",
+    "admin_level": "5",
+    "boundary": "administrative",
+    "name": "Петроградский район",
+    "name:de": "Petrograder Rajon",
+    "name:en": "Petrogradsky District",
+    "name:pl": "rejon pietrogradski",
+    "name:ru": "Петроградский район",
+    "name:uk": "Петроградський район",
+    "name:zh": "彼得格勒区",
+    "name:zh-Hans": "彼得格勒区",
+    "name:zh-Hant": "彼得格勒區",
+    "type": "boundary",
+    "url": "http://www.gov.spb.ru/law?d&nd=8414528&nh=0&header=010000002L01#I0",
+    "wikidata": "Q270196",
+    "wikipedia": "ru:Петроградский район"
+  }
+},
+{
+  "type": "relation",
+  "id": 1115082,
+  "center": {
+    "lat": 60.0127163,
+    "lon": 29.7456878
+  },
+  "tags": {
+    "addr:country": "RU",
+    "addr:region": "Санкт-Петербург",
+    "admin_level": "5",
+    "boundary": "administrative",
+    "name": "Кронштадтский район",
+    "name:ca": "Districte de Kronstadt",
+    "name:de": "Rajon Kronstadt",
+    "name:en": "Kronshtadtsky District",
+    "name:pl": "rejon kronsztadski",
+    "name:ru": "Кронштадтский район",
+    "name:zh": "喀琅施塔得区",
+    "name:zh-Hans": "喀琅施塔得区",
+    "name:zh-Hant": "克隆斯塔特區",
+    "note": "границы совпадают с границами МО город Кронштадт",
+    "type": "boundary",
+    "url": "http://www.gov.spb.ru/law?d&nd=8414528&nh=0&header=010000000P01#I0",
+    "wikidata": "Q155863",
+    "wikipedia": "ru:Кронштадт"
+  }
+},
+{
+  "type": "relation",
+  "id": 1115366,
+  "center": {
+    "lat": 60.1236818,
+    "lon": 29.8105466
+  },
+  "tags": {
+    "addr:country": "RU",
+    "addr:region": "Санкт-Петербург",
+    "admin_level": "5",
+    "boundary": "administrative",
+    "name": "Курортный район",
+    "name:de": "Rajon Kurort",
+    "name:en": "Kurortny District",
+    "name:fi": "Kurortin piiri",
+    "name:pl": "rejon kurortny",
+    "name:ru": "Курортный район",
+    "name:zh": "库罗尔特内区",
+    "name:zh-Hans": "库罗尔特内区",
+    "name:zh-Hant": "庫羅爾特內區",
+    "type": "boundary",
+    "url": "http://www.gov.spb.ru/law?d&nd=8414528&nh=0&header=010000000R01#I0",
+    "wikidata": "Q270402",
+    "wikipedia": "ru:Курортный район"
+  }
+},
+{
+  "type": "relation",
+  "id": 1115367,
+  "center": {
+    "lat": 60.0235404,
+    "lon": 30.1432083
+  },
+  "tags": {
+    "addr:country": "RU",
+    "addr:region": "Санкт-Петербург",
+    "admin_level": "5",
+    "boundary": "administrative",
+    "name": "Приморский район",
+    "name:en": "Primorsky District",
+    "name:pl": "rejon primorski",
+    "name:ru": "Приморский район",
+    "name:uk": "Приморський район",
+    "name:zh": "海滨区",
+    "name:zh-Hans": "海滨区",
+    "name:zh-Hant": "海濱區",
+    "old_name": "Ждановский район",
+    "type": "boundary",
+    "url": "http://www.gov.spb.ru/law?d&nd=8414528&nh=0&header=010000003B01#I0",
+    "wikidata": "Q1268519",
+    "wikipedia": "ru:Приморский район (Санкт-Петербург)"
+  }
+}
+
+  ]
+}

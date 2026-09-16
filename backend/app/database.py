@@ -18,5 +18,5 @@ def check_database() -> None:
     with get_engine().connect() as connection:
         connection.execute(text("SELECT PostGIS_Version()")).scalar_one()
         revision = connection.execute(text("SELECT version_num FROM alembic_version")).scalar_one()
-        if revision != "0003_ingestion":
+        if revision != "0004_open_data":
             raise RuntimeError("Database migration is not current")

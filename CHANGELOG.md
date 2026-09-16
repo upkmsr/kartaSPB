@@ -1,5 +1,11 @@
 # Changelog
 
+## SPRINT 6
+
+- Added a bounded Overpass/OpenStreetMap adapter and a real 18-record Petersburg
+  district snapshot with deterministic offline and refresh imports.
+- Registered ODbL metadata and verified repeat imports, geometry and provenance.
+
 ## SPRINT 5
 
 - Added the shared source registry, ingestion runs, staging, validation,
