@@ -60,6 +60,7 @@ export function DistrictPanel(props: DistrictPanelProps) {
             />
           </label>
         </div>)}
+        <p>Закреплённые территории школ: официальные адресные списки, проверенных полигонов нет. Включение слоя не означает право зачисления.</p>
       </div>
     </details>
   </aside>;

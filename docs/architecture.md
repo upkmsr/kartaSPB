@@ -1,5 +1,16 @@
 # Архитектура
 
+## SPRINT 10 — Schools
+
+`app.schools` reuses the source/staging/validation/provenance pipeline, with an
+atomic `after_upsert` callback for specialized `schools` rows. Canonical geometry
+stays in `project_objects`; specialized admissions/capacity fields stay in
+`schools` and are NULL unless supported. `/api/schools` accepts a bbox and limit;
+the existing GiST geometry index supports viewport filtering. The map layer uses
+canonical objects and existing Layer Registry. `school_catchments` supports future
+verified MultiPolygons with a GiST index but currently contains only source-level
+`address_list` metadata, so the independent catchment layer is empty by design.
+
 ## SPRINT 9 — Surface Transport
 
 `app.transport` keeps route MultiLineStrings and stop Points as different

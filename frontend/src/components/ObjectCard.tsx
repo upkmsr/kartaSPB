@@ -23,6 +23,12 @@ export function ObjectCard({ object, categoryName = 'Нет данных', onClo
       <div><dt>Категория</dt><dd>{categoryName}</dd></div>
       <div><dt>ID</dt><dd>{object.id}</dd></div>
       <div><dt>Источник</dt><dd>{object.source || 'Нет данных'}</dd></div>
+      {object.categoryId === 'school' && <>
+        <div><dt>Тип</dt><dd>{String(object.properties.schoolType || 'Нет данных')}</dd></div>
+        <div><dt>Адрес</dt><dd>{String(object.properties.address || 'Нет данных')}</dd></div>
+        <div><dt>Актуальность источника</dt><dd>{String(object.properties.sourceDataAt || 'Нет данных')}</dd></div>
+        <div><dt>Уверенность данных</dt><dd>{typeof object.properties.confidence === 'number' ? `${Math.round(object.properties.confidence * 100)}%` : 'Нет данных'}</dd></div>
+      </>}
     </dl>
     <p className="card-description">{object.description || 'Нет данных'}</p>
   </aside>;

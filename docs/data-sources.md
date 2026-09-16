@@ -1,5 +1,31 @@
 # Источники данных
 
+## SPRINT 10 — Schools
+
+- Source: OpenStreetMap `amenity=school` nodes, ways and relations within OSM
+  Petersburg area `3600337422`, collected 2026-09-16 from
+  `https://overpass-api.de/api/interpreter`. License ODbL 1.0; attribution
+  © OpenStreetMap contributors. Raw snapshot:
+  `backend/app/schools/snapshots/spb_schools.json`.
+- The source returned 1,061 elements, of which 1,031 have names and are eligible
+  for initial import. OSM element type/ID is the stable campus/building identity;
+  distinct mapped buildings are not merged on school number alone.
+- Location for ways/relations is the Overpass-computed center, not an invented
+  entrance. Type uses explicit tags or name keywords. Public/private uses only
+  `operator:type`; otherwise `unknown`. `ref` is kept as source-provided school
+  number, not asserted to be a globally unique official registry ID.
+- Confidence is a transparent completeness score: base 0.5 plus 0.1 each for
+  address, website, source `ref`, and operator type. It is not an admission or
+  educational-quality rating. OSM base timestamp and optional per-element
+  `check_date` are exposed separately.
+- Official catchment research: the [Saint Petersburg government admission page](https://www.gov.spb.ru/gov/terr/reg_center/obrazovanie/poryadok-priema-v-obrazovatelnye-uchrezhdeniya/)
+  links district decrees and address lists. No verified polygon dataset was found
+  for this import. The catchments API records `address_list` and explains that
+  a point lookup cannot guarantee admission. No polygon is synthesized.
+- Limitations: OSM coverage and private-school tagging are incomplete; specialized
+  outcome/capacity/rating fields remain NULL. This is not the official education
+  registry and should be cross-checked before decisions.
+
 ## SPRINT 9 — Surface transport sample
 
 - Source: OpenStreetMap through Overpass; ODbL 1.0,

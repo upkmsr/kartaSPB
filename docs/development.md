@@ -33,8 +33,9 @@ npm run dev
 
 ## Миграции
 
-Текущий head: `0007_transport`, поверх `0001_postgis` → `0002_objects` →
-`0003_ingestion` → `0004_open_data` → `0005_nature` → `0006_metro`.
+Текущий head: `0008_schools`, поверх `0001_postgis` → `0002_objects` →
+`0003_ingestion` → `0004_open_data` → `0005_nature` → `0006_metro` →
+`0007_transport`.
 Создаёт categories, project_objects, ingestion tables и предметные категории;
 geometry(Geometry,4326) имеет GiST spatial index.
 Downgrade до 0001 удаляет новые таблицы вместе с их данными; применять только
@@ -51,6 +52,7 @@ docker compose exec backend python -m app.open_data
 docker compose exec backend python -m app.nature
 docker compose exec backend python -m app.metro
 docker compose exec backend python -m app.transport
+docker compose exec backend python -m app.schools
 ```
 
 `python -m app.open_data --refresh` выполняет новый ограниченный Overpass-запрос;

@@ -1,5 +1,10 @@
 # Changelog
 
+## SPRINT 10
+
+- Added specialized school storage, broad OSM school import, source freshness and
+  confidence, bbox API, school layer/card and explicit catchment uncertainty.
+
 ## SPRINT 9
 
 - Added a real OSM sample of bus, tram and trolleybus routes with 441 distinct

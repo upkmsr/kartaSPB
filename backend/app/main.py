@@ -9,6 +9,7 @@ from app.database import check_database, get_engine
 from app.imports import router as import_router
 from app.metro.api import router as metro_router
 from app.objects import router
+from app.schools.api import router as schools_router
 from app.search import router as search_router
 from app.transport.api import router as transport_router
 
@@ -27,6 +28,7 @@ app.include_router(search_router)
 app.include_router(import_router)
 app.include_router(metro_router)
 app.include_router(transport_router)
+app.include_router(schools_router)
 
 
 @app.get("/api/health/live")

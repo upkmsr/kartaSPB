@@ -2,7 +2,7 @@ import json
 import logging
 from collections.abc import Iterable
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, Callable
 
 from sqlalchemy import Connection, text
 
@@ -63,6 +63,7 @@ def import_records(
     source: SourceDefinition,
     module: str,
     records: Iterable[tuple[str, dict[str, Any], ImportRecord]],
+    after_upsert: Callable[[Connection, str, ImportRecord, dict[str, Any]], None] | None = None,
 ) -> tuple[int, ImportStats]:
     stats = ImportStats()
     with get_engine().begin() as connection:
@@ -162,9 +163,11 @@ def import_records(
                     text("""
                     UPDATE ingestion_staging SET normalized_payload=CAST(:payload AS jsonb),
                       validation_status='imported',canonical_object_id=:object WHERE id=:id
-                """),
+                    """),
                     {"payload": json.dumps(normalized), "object": object_id, "id": staging_id},
                 )
+                if after_upsert is not None:
+                    after_upsert(connection, object_id, record, raw)
             connection.execute(
                 text("""
                 UPDATE ingestion_runs SET finished_at=now(),status='completed',objects_found=:found,

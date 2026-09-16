@@ -1,5 +1,10 @@
 # Модули
 
+SPRINT 10 adds `schools`: a specialized table/API and importer for OSM schools,
+lyceums, gymnasiums and privately operated schools. School points and catchments
+have separate Layer Registry toggles. The catchment status is explicit rather
+than drawing unofficial territories.
+
 SPRINT 9 adds `transport`: an OSM importer for separate route/stop entities,
 independent bus/tram/trolleybus/stops layers, and nearby transport analysis.
 Schedules and routing remain outside this module.

@@ -5,6 +5,10 @@ Master Specification: [KARTASPB_AI_AGENT_SPEC.md](KARTASPB_AI_AGENT_SPEC.md).
 
 ## Текущий этап
 
+SPRINT 10 — школы Петербурга: 1 031 объект из OSM, отдельная модель и bbox API,
+слой школ и явное предупреждение об отсутствии проверенных полигонов закрепления.
+После запуска выполните `docker compose exec backend python -m app.schools`.
+
 SPRINT 5–9 — общий ingestion pipeline и реальные, ограниченные снимки OSM:
 базовые районы, природа/вода, метро и наземный транспорт. Импорт выполняется
 явными командами после запуска Compose; на чистой БД предметные таблицы пусты:
@@ -67,6 +71,8 @@ docker compose up --build --wait
 - Import runs: `GET /api/import/runs`
 - Nearest metro: `GET /api/analysis/metro/nearest?lon=30.3158&lat=59.9391`
 - Nearby transport: `GET /api/analysis/transport/nearby?lon=30.3158&lat=59.9391`
+- Schools: `GET /api/schools?bbox=30.2,59.8,30.4,60.0`
+- School catchment status: `GET /api/schools/catchments`
 
 Compose ждёт БД, выполняет `alembic upgrade head`, затем запускает API и frontend.
 БД хранится в named volume, порт БД наружу не публикуется.
