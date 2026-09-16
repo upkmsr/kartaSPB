@@ -1,5 +1,20 @@
 # Источники данных
 
+## SPRINT 7 — Nature snapshot
+
+- Source: named OpenStreetMap ways through the same Overpass endpoint; ODbL 1.0,
+  © OpenStreetMap contributors.
+- Collection: 2026-09-16, bbox `59.75,29.65,60.15,30.65`; named parks, gardens,
+  forests/woods, grass/recreation areas, natural water, rivers, canals and mapped
+  embankments. Raw snapshot is `backend/app/nature/snapshots/spb_nature.json`.
+- Method: provider way geometry becomes Polygon when closed and LineString
+  otherwise. Stable IDs are `osm-nature-way-<id>`; original tags are retained in
+  staging and classification/OSM IDs in canonical properties.
+- Known limitations: only named OSM ways in the bounded snapshot are included;
+  unnamed areas, multipolygon relations and a complete analytical polygon for the
+  Gulf of Finland are not represented in this first controlled dataset. Coverage
+  and naming reflect OSM, not an official inventory.
+
 ## SPRINT 6 — bounded OpenStreetMap import
 
 - Source: OpenStreetMap through `https://overpass-api.de/api/interpreter`.

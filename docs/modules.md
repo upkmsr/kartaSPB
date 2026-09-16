@@ -1,5 +1,10 @@
 # Модули
 
+SPRINT 7 adds the isolated `nature` module. It owns source classification and the
+import command; storage, provenance and HTTP objects stay in CORE. Frontend layers
+`nature-green` and `nature-water` use the existing Layer Registry and canonical
+object interaction.
+
 SPRINT 6 adds the `open_data` adapter. Its deliberately small base dataset has
 18 current OSM district relations represented by provider-computed center points.
 It exercises initial and repeatable imports without turning the repository into a

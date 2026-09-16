@@ -15,11 +15,17 @@ const DISTRICT_FILL = 'district-fill';
 const DISTRICT_OUTLINE = 'district-outline';
 const DISTRICT_SELECTED = 'district-selected';
 const OBJECT_LAYER = 'demo-points';
+const GREEN_FILL = 'nature-green-fill';
+const GREEN_LINE = 'nature-green-line';
+const WATER_FILL = 'nature-water-fill';
+const WATER_LINE = 'nature-water-line';
 const SEARCH_SOURCE = 'search-result';
 const SEARCH_LAYER = 'search-result-marker';
 const MAP_LAYERS: Record<ProjectLayerId, readonly string[]> = {
   districts: [DISTRICT_FILL, DISTRICT_OUTLINE, DISTRICT_SELECTED],
   'demo-object': [OBJECT_LAYER],
+  'nature-green': [GREEN_FILL, GREEN_LINE],
+  'nature-water': [WATER_FILL, WATER_LINE],
 };
 
 interface MapCallbacks {
@@ -53,7 +59,14 @@ export function createMap(
   let visibleCategories: string[] = [];
   const applyCategories = () => {
     if (!loaded) return;
-    map.setFilter(OBJECT_LAYER, ['in', ['get', 'categoryId'], ['literal', visibleCategories]]);
+    const visible: FilterSpecification = ['in', ['get', 'categoryId'], ['literal', visibleCategories]];
+    map.setFilter(OBJECT_LAYER, ['all', visible, ['==', ['geometry-type'], 'Point']]);
+    for (const [layer, category] of [
+      [GREEN_FILL, 'nature-green'], [GREEN_LINE, 'nature-green'],
+      [WATER_FILL, 'nature-water'], [WATER_LINE, 'nature-water'],
+    ] as const) {
+      map.setFilter(layer, ['all', visible, ['==', ['get', 'categoryId'], category]]);
+    }
     const color: ExpressionSpecification = categories.length
       ? ['match', ['get', 'categoryId'], ...categories.flatMap((category) => [category.id, category.color]), '#a4b5c5'] as unknown as ExpressionSpecification
       : ['literal', '#a4b5c5'];
@@ -82,6 +95,10 @@ export function createMap(
     map.setPaintProperty(DISTRICT_SELECTED, 'line-opacity', registry.districts.opacity);
     map.setPaintProperty(OBJECT_LAYER, 'circle-opacity', registry['demo-object'].opacity);
     map.setPaintProperty(OBJECT_LAYER, 'circle-stroke-opacity', registry['demo-object'].opacity);
+    map.setPaintProperty(GREEN_FILL, 'fill-opacity', 0.5 * registry['nature-green'].opacity);
+    map.setPaintProperty(GREEN_LINE, 'line-opacity', registry['nature-green'].opacity);
+    map.setPaintProperty(WATER_FILL, 'fill-opacity', 0.55 * registry['nature-water'].opacity);
+    map.setPaintProperty(WATER_LINE, 'line-opacity', registry['nature-water'].opacity);
     applySelection();
   };
 
@@ -99,6 +116,10 @@ export function createMap(
     const definitions: AddLayerObject[] = [
       { id: DISTRICT_FILL, type: 'fill', source: SOURCES.districts, paint: { 'fill-color': '#17343c', 'fill-opacity': 0.14 } },
       { id: DISTRICT_OUTLINE, type: 'line', source: SOURCES.districts, paint: { 'line-color': '#76a9ad', 'line-width': 1.2, 'line-opacity': 0.7 } },
+      { id: GREEN_FILL, type: 'fill', source: SOURCES['demo-object'], filter: ['==', ['get', 'categoryId'], 'nature-green'], paint: { 'fill-color': '#55b978', 'fill-opacity': 0.38 } },
+      { id: WATER_FILL, type: 'fill', source: SOURCES['demo-object'], filter: ['==', ['get', 'categoryId'], 'nature-water'], paint: { 'fill-color': '#4ba3d3', 'fill-opacity': 0.44 } },
+      { id: GREEN_LINE, type: 'line', source: SOURCES['demo-object'], filter: ['==', ['get', 'categoryId'], 'nature-green'], paint: { 'line-color': '#78d696', 'line-width': 3 } },
+      { id: WATER_LINE, type: 'line', source: SOURCES['demo-object'], filter: ['==', ['get', 'categoryId'], 'nature-water'], paint: { 'line-color': '#66c4ef', 'line-width': 3 } },
       { id: OBJECT_LAYER, type: 'circle', source: SOURCES['demo-object'], paint: { 'circle-radius': 13, 'circle-color': '#77dfcc', 'circle-stroke-width': 4, 'circle-stroke-color': '#163e42' } },
       { id: DISTRICT_SELECTED, type: 'line', source: SOURCES.districts, filter: ['in', ['get', 'id'], ['literal', []]], paint: { 'line-color': '#b8fff2', 'line-width': 3, 'line-opacity': 0.7 } },
       { id: SEARCH_LAYER, type: 'circle', source: SEARCH_SOURCE, paint: { 'circle-radius': 10, 'circle-color': '#ffc078', 'circle-stroke-width': 4, 'circle-stroke-color': '#402d19' } },
@@ -112,8 +133,9 @@ export function createMap(
   });
   map.on('click', (event) => {
     if (!loaded) return;
-    const features = map.queryRenderedFeatures(event.point, { layers: [OBJECT_LAYER, DISTRICT_FILL] });
-    const object = features.find((feature) => feature.layer.id === OBJECT_LAYER);
+    const objectLayers = [OBJECT_LAYER, GREEN_FILL, GREEN_LINE, WATER_FILL, WATER_LINE];
+    const features = map.queryRenderedFeatures(event.point, { layers: [...objectLayers, DISTRICT_FILL] });
+    const object = features.find((feature) => objectLayers.includes(feature.layer.id));
     const objectId = object?.properties.id ?? object?.id;
     if (typeof objectId === 'string') { callbacks.onObjectClick(objectId); return; }
     const district = features.find((feature) => feature.layer.id === DISTRICT_FILL);
@@ -122,7 +144,9 @@ export function createMap(
   });
   map.on('mousemove', (event) => {
     if (!loaded) return;
-    map.getCanvas().style.cursor = map.queryRenderedFeatures(event.point, { layers: [OBJECT_LAYER, DISTRICT_FILL] }).length ? 'pointer' : '';
+    map.getCanvas().style.cursor = map.queryRenderedFeatures(event.point, {
+      layers: [OBJECT_LAYER, GREEN_FILL, GREEN_LINE, WATER_FILL, WATER_LINE, DISTRICT_FILL],
+    }).length ? 'pointer' : '';
   });
   map.on('error', () => { if (!loaded) callbacks.onError(); });
 

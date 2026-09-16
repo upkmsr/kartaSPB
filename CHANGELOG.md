@@ -1,5 +1,11 @@
 # Changelog
 
+## SPRINT 7
+
+- Added a real bounded OSM nature snapshot/importer with green and water
+  categories, valid polygon/line geometry and provenance.
+- Added independent green/water MapLibre layers, filters and Object Card source.
+
 ## SPRINT 6
 
 - Added a bounded Overpass/OpenStreetMap adapter and a real 18-record Petersburg

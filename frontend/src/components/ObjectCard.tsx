@@ -22,6 +22,7 @@ export function ObjectCard({ object, categoryName = 'Нет данных', onClo
     <dl>
       <div><dt>Категория</dt><dd>{categoryName}</dd></div>
       <div><dt>ID</dt><dd>{object.id}</dd></div>
+      <div><dt>Источник</dt><dd>{object.source || 'Нет данных'}</dd></div>
     </dl>
     <p className="card-description">{object.description || 'Нет данных'}</p>
   </aside>;

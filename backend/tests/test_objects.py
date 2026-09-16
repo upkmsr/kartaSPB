@@ -48,7 +48,7 @@ def test_objects_api_real_postgis():
     with get_engine().connect() as connection:
         assert (
             connection.execute(text("SELECT version_num FROM alembic_version")).scalar_one()
-            == "0004_open_data"
+            == "0005_nature"
         )
         assert (
             connection.execute(

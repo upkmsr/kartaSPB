@@ -73,7 +73,7 @@ it('mounts a map container and supplies one separate GeoJSON source with a stabl
     type: 'geojson', data: toGeoJSON(demoObjects),
   });
   expect(maps[0].addSource).toHaveBeenCalledWith('districts', expect.objectContaining({ type: 'geojson' }));
-  expect(maps[0].addLayer).toHaveBeenCalledTimes(5);
+  expect(maps[0].addLayer).toHaveBeenCalledTimes(9);
   expect(districts).toHaveLength(18);
   expect(demoObjects).toHaveLength(1);
   expect(rawPoint.type).toBe('Feature');
@@ -170,7 +170,10 @@ it('filters one and multiple categories locally and restores all without recreat
   const other = screen.getByRole('checkbox', { name: 'Прочее' });
   const requests = vi.mocked(fetch).mock.calls.length;
   fireEvent.click(other);
-  expect(maps[0].setFilter).toHaveBeenLastCalledWith('demo-points', ['in', ['get', 'categoryId'], ['literal', ['demo']]]);
+  expect(maps[0].setFilter).toHaveBeenCalledWith('demo-points', [
+    'all', ['in', ['get', 'categoryId'], ['literal', ['demo']]],
+    ['==', ['geometry-type'], 'Point'],
+  ]);
   fireEvent.click(demo);
   expect(screen.getByText('Нет объектов для выбранных категорий.')).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: 'Показать все' }));

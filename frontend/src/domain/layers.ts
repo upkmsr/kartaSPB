@@ -1,4 +1,4 @@
-export type ProjectLayerId = 'districts' | 'demo-object';
+export type ProjectLayerId = 'districts' | 'demo-object' | 'nature-green' | 'nature-water';
 
 export interface LayerDefinition {
   id: ProjectLayerId;
@@ -13,6 +13,8 @@ export type LayerRegistry = Record<ProjectLayerId, LayerDefinition>;
 export const initialLayerRegistry: LayerRegistry = {
   districts: { id: 'districts', name: 'Районы', visible: true, opacity: 0.7, order: 10 },
   'demo-object': { id: 'demo-object', name: 'Объекты проекта', visible: true, opacity: 1, order: 20 },
+  'nature-green': { id: 'nature-green', name: 'Зелёные территории', visible: true, opacity: 0.75, order: 30 },
+  'nature-water': { id: 'nature-water', name: 'Вода', visible: true, opacity: 0.8, order: 40 },
 };
 
 export function updateLayer(

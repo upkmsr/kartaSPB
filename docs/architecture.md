@@ -1,5 +1,14 @@
 # Архитектура
 
+## SPRINT 7 — Nature
+
+The isolated `app.nature` importer classifies source tags into canonical
+`nature-green` and `nature-water` categories. Closed OSM ways remain polygons and
+open waterways/embankments remain lines. MapLibre renders fill and line sublayers
+from the shared canonical GeoJSON source; registry visibility/opacity and category
+filters are independent. A rendered feature click resolves its canonical ID into
+the existing React Object Card, including source attribution.
+
 ## SPRINT 6 — Base OSM/Open Geodata
 
 `app.open_data.overpass` is a bounded source adapter, separate from the basemap.
