@@ -1,5 +1,11 @@
 # Changelog
 
+## SPRINT 8
+
+- Added real OSM metro lines, stations and entrances with stable IDs, provenance,
+  source line colors and interchange metadata.
+- Added independent metro layers and straight-line nearest-station analysis.
+
 ## SPRINT 7
 
 - Added a real bounded OSM nature snapshot/importer with green and water

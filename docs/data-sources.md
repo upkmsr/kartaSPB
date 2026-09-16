@@ -1,5 +1,23 @@
 # Источники данных
 
+## SPRINT 8 — Saint Petersburg metro
+
+- Source: OpenStreetMap through bounded Overpass query; ODbL 1.0,
+  © OpenStreetMap contributors.
+- Collection: 2026-09-16 inside OSM Petersburg area `3600337422`: subway route
+  relations, `railway=station + station=subway` nodes and
+  `railway=subway_entrance` nodes. Raw snapshot:
+  `backend/app/metro/snapshots/spb_metro.json`.
+- Method: opposite route directions share `ref`; one relation per ref supplies six
+  displayed line geometries. Station membership in route relations becomes
+  `lineRefs`; multiple refs mark an interchange where source membership supports
+  it. Provider colors are mapped to official line display colors.
+- Snapshot yields 6 lines, 72 stations and 261 entrances. Stable IDs retain the
+  OSM type and ID. Known limitation: entrances without a source name use the
+  generic descriptive label “Вход в метро”; route membership in OSM can be
+  incomplete. Nearest-station distance is geodesic straight-line distance and is
+  explicitly returned as `method=straight-line`, not walking time.
+
 ## SPRINT 7 — Nature snapshot
 
 - Source: named OpenStreetMap ways through the same Overpass endpoint; ODbL 1.0,

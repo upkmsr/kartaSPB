@@ -1,5 +1,14 @@
 # Архитектура
 
+## SPRINT 8 — Metro
+
+The isolated `app.metro` module imports line MultiLineStrings and station/entrance
+Points into canonical objects. Three Layer Registry entries control their MapLibre
+rendering independently; line color comes from normalized source properties.
+Clicks use the shared ID-to-Object-Card path. `/api/analysis/metro/nearest` uses
+PostGIS geography distance and labels its method `straight-line`; routing is not
+simulated.
+
 ## SPRINT 7 — Nature
 
 The isolated `app.nature` importer classifies source tags into canonical

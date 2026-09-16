@@ -19,6 +19,9 @@ const GREEN_FILL = 'nature-green-fill';
 const GREEN_LINE = 'nature-green-line';
 const WATER_FILL = 'nature-water-fill';
 const WATER_LINE = 'nature-water-line';
+const METRO_LINE = 'metro-lines';
+const METRO_STATION = 'metro-stations';
+const METRO_ENTRANCE = 'metro-entrances';
 const SEARCH_SOURCE = 'search-result';
 const SEARCH_LAYER = 'search-result-marker';
 const MAP_LAYERS: Record<ProjectLayerId, readonly string[]> = {
@@ -26,6 +29,9 @@ const MAP_LAYERS: Record<ProjectLayerId, readonly string[]> = {
   'demo-object': [OBJECT_LAYER],
   'nature-green': [GREEN_FILL, GREEN_LINE],
   'nature-water': [WATER_FILL, WATER_LINE],
+  'metro-lines': [METRO_LINE],
+  'metro-stations': [METRO_STATION],
+  'metro-entrances': [METRO_ENTRANCE],
 };
 
 interface MapCallbacks {
@@ -60,13 +66,20 @@ export function createMap(
   const applyCategories = () => {
     if (!loaded) return;
     const visible: FilterSpecification = ['in', ['get', 'categoryId'], ['literal', visibleCategories]];
-    map.setFilter(OBJECT_LAYER, ['all', visible, ['==', ['geometry-type'], 'Point']]);
+    map.setFilter(OBJECT_LAYER, ['all', visible, ['==', ['geometry-type'], 'Point'], [
+      '!', ['in', ['get', 'categoryId'], ['literal', [
+        'metro-station', 'metro-entrance',
+      ]]],
+    ]]);
     for (const [layer, category] of [
       [GREEN_FILL, 'nature-green'], [GREEN_LINE, 'nature-green'],
       [WATER_FILL, 'nature-water'], [WATER_LINE, 'nature-water'],
     ] as const) {
       map.setFilter(layer, ['all', visible, ['==', ['get', 'categoryId'], category]]);
     }
+    map.setFilter(METRO_LINE, ['all', visible, ['==', ['get', 'categoryId'], 'metro-line']]);
+    map.setFilter(METRO_STATION, ['all', visible, ['==', ['get', 'categoryId'], 'metro-station']]);
+    map.setFilter(METRO_ENTRANCE, ['all', visible, ['==', ['get', 'categoryId'], 'metro-entrance']]);
     const color: ExpressionSpecification = categories.length
       ? ['match', ['get', 'categoryId'], ...categories.flatMap((category) => [category.id, category.color]), '#a4b5c5'] as unknown as ExpressionSpecification
       : ['literal', '#a4b5c5'];
@@ -99,6 +112,9 @@ export function createMap(
     map.setPaintProperty(GREEN_LINE, 'line-opacity', registry['nature-green'].opacity);
     map.setPaintProperty(WATER_FILL, 'fill-opacity', 0.55 * registry['nature-water'].opacity);
     map.setPaintProperty(WATER_LINE, 'line-opacity', registry['nature-water'].opacity);
+    map.setPaintProperty(METRO_LINE, 'line-opacity', registry['metro-lines'].opacity);
+    map.setPaintProperty(METRO_STATION, 'circle-opacity', registry['metro-stations'].opacity);
+    map.setPaintProperty(METRO_ENTRANCE, 'circle-opacity', registry['metro-entrances'].opacity);
     applySelection();
   };
 
@@ -120,6 +136,12 @@ export function createMap(
       { id: WATER_FILL, type: 'fill', source: SOURCES['demo-object'], filter: ['==', ['get', 'categoryId'], 'nature-water'], paint: { 'fill-color': '#4ba3d3', 'fill-opacity': 0.44 } },
       { id: GREEN_LINE, type: 'line', source: SOURCES['demo-object'], filter: ['==', ['get', 'categoryId'], 'nature-green'], paint: { 'line-color': '#78d696', 'line-width': 3 } },
       { id: WATER_LINE, type: 'line', source: SOURCES['demo-object'], filter: ['==', ['get', 'categoryId'], 'nature-water'], paint: { 'line-color': '#66c4ef', 'line-width': 3 } },
+      { id: METRO_LINE, type: 'line', source: SOURCES['demo-object'], filter: ['==', ['get', 'categoryId'], 'metro-line'], paint: {
+        'line-color': ['match', ['get', 'lineColor'], 'red', '#d6083b', 'blue', '#0078c9', 'green', '#009a49', 'orange', '#ea7125', 'purple', '#702785', 'brown', '#8d5b2d', '#d7dce2'],
+        'line-width': 4,
+      } },
+      { id: METRO_STATION, type: 'circle', source: SOURCES['demo-object'], filter: ['==', ['get', 'categoryId'], 'metro-station'], paint: { 'circle-radius': 6, 'circle-color': '#ffffff', 'circle-stroke-width': 3, 'circle-stroke-color': '#202b35' } },
+      { id: METRO_ENTRANCE, type: 'circle', source: SOURCES['demo-object'], filter: ['==', ['get', 'categoryId'], 'metro-entrance'], paint: { 'circle-radius': 3, 'circle-color': '#9aa8b5', 'circle-stroke-width': 1, 'circle-stroke-color': '#202b35' } },
       { id: OBJECT_LAYER, type: 'circle', source: SOURCES['demo-object'], paint: { 'circle-radius': 13, 'circle-color': '#77dfcc', 'circle-stroke-width': 4, 'circle-stroke-color': '#163e42' } },
       { id: DISTRICT_SELECTED, type: 'line', source: SOURCES.districts, filter: ['in', ['get', 'id'], ['literal', []]], paint: { 'line-color': '#b8fff2', 'line-width': 3, 'line-opacity': 0.7 } },
       { id: SEARCH_LAYER, type: 'circle', source: SEARCH_SOURCE, paint: { 'circle-radius': 10, 'circle-color': '#ffc078', 'circle-stroke-width': 4, 'circle-stroke-color': '#402d19' } },
@@ -133,7 +155,10 @@ export function createMap(
   });
   map.on('click', (event) => {
     if (!loaded) return;
-    const objectLayers = [OBJECT_LAYER, GREEN_FILL, GREEN_LINE, WATER_FILL, WATER_LINE];
+    const objectLayers = [
+      OBJECT_LAYER, GREEN_FILL, GREEN_LINE, WATER_FILL, WATER_LINE,
+      METRO_LINE, METRO_STATION, METRO_ENTRANCE,
+    ];
     const features = map.queryRenderedFeatures(event.point, { layers: [...objectLayers, DISTRICT_FILL] });
     const object = features.find((feature) => objectLayers.includes(feature.layer.id));
     const objectId = object?.properties.id ?? object?.id;
@@ -145,7 +170,10 @@ export function createMap(
   map.on('mousemove', (event) => {
     if (!loaded) return;
     map.getCanvas().style.cursor = map.queryRenderedFeatures(event.point, {
-      layers: [OBJECT_LAYER, GREEN_FILL, GREEN_LINE, WATER_FILL, WATER_LINE, DISTRICT_FILL],
+      layers: [
+        OBJECT_LAYER, GREEN_FILL, GREEN_LINE, WATER_FILL, WATER_LINE,
+        METRO_LINE, METRO_STATION, METRO_ENTRANCE, DISTRICT_FILL,
+      ],
     }).length ? 'pointer' : '';
   });
   map.on('error', () => { if (!loaded) callbacks.onError(); });

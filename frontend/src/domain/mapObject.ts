@@ -25,6 +25,6 @@ export interface Category {
 export function toGeoJSON(objects: readonly MapObject[]): FeatureCollection {
   return { type: 'FeatureCollection', features: objects.map((object) => ({
     type: 'Feature', id: object.id, geometry: object.geometry,
-    properties: { id: object.id, name: object.name, categoryId: object.categoryId },
+    properties: { ...object.properties, id: object.id, name: object.name, categoryId: object.categoryId },
   })) };
 }

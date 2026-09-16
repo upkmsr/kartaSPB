@@ -1,5 +1,9 @@
 # Модули
 
+SPRINT 8 adds `metro`: its importer, three canonical categories, three registered
+map layers and a nearest-station analysis endpoint. Route relations are lines;
+stations and entrances remain distinct point entities.
+
 SPRINT 7 adds the isolated `nature` module. It owns source classification and the
 import command; storage, provenance and HTTP objects stay in CORE. Frontend layers
 `nature-green` and `nature-water` use the existing Layer Registry and canonical
