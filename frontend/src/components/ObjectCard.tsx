@@ -47,6 +47,16 @@ export function ObjectCard({ object, categoryName = 'Нет данных', onClo
         <div><dt>Актуальность источника</dt><dd>{String(object.properties.sourceDataAt || 'Нет данных')}</dd></div>
         <div><dt>Уверенность данных</dt><dd>{typeof object.properties.confidence === 'number' ? `${Math.round(object.properties.confidence * 100)}%` : 'Нет данных'}</dd></div>
       </>}
+      {object.categoryId.startsWith('road-') && <>
+        <div><dt>Тип дороги</dt><dd>{String(object.properties.roadType || 'Нет данных')}</dd></div>
+        {object.properties.corridor && object.properties.corridor !== 'other' && <div><dt>Коридор</dt><dd>{object.properties.corridor === 'kad' ? 'КАД' : 'ЗСД'}</dd></div>}
+        {object.properties.ref && <div><dt>Номер</dt><dd>{String(object.properties.ref)}</dd></div>}
+        {object.properties.roadClass && <div><dt>Класс OSM</dt><dd>{String(object.properties.roadClass)}</dd></div>}
+        {object.properties.toll !== null && object.properties.toll !== undefined && <div><dt>Платная</dt><dd>{object.properties.toll ? 'Да' : 'Нет'}</dd></div>}
+        {object.properties.lanes && <div><dt>Полосы</dt><dd>{String(object.properties.lanes)}</dd></div>}
+        {object.properties.maxspeed && <div><dt>Ограничение скорости</dt><dd>{String(object.properties.maxspeed)}</dd></div>}
+        <div><dt>Уверенность данных</dt><dd>{typeof object.properties.confidence === 'number' ? `${Math.round(object.properties.confidence * 100)}%` : 'Нет данных'}</dd></div>
+      </>}
     </dl>
     <p className="card-description">{object.description || 'Нет данных'}</p>
   </aside>;

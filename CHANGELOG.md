@@ -1,5 +1,12 @@
 # Changelog
 
+## SPRINT 13
+
+- Added a real bounded OSM roads import with structured KAD/ZSD corridors,
+  primary/trunk/motorway roads, source-tagged ramps and interchanges.
+- Added specialized road fields, PostGIS indexes, viewport API, independent
+  map layers and straight-line road proximity queries.
+
 ## SPRINT 12
 
 - Imported 5,248 named medical facilities from a dated Petersburg OSM snapshot,

@@ -1,5 +1,10 @@
 # Модули
 
+SPRINT 13 adds `roads`: a specialized table over canonical geometries, OSM
+importer, real major/KAD/ZSD/ramp/interchange data, bbox APIs, straight-line
+proximity, and independent MapLibre layers. Viewport loading keeps road ways
+out of the initial React object array.
+
 SPRINT 12 adds `medical`: 5,248 physical facilities imported from a dated OSM
 snapshot; specialized facility, organization and service tables; bbox-filtered
 API; medical/pharmacy layers and canonical Object Cards. Pharmacy points load

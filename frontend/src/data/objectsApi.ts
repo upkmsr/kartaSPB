@@ -8,7 +8,7 @@ async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
 
 export const objectsApi = {
   getObjects: (signal?: AbortSignal, categoryIds?: string[]) => get<MapObject[]>(
-    `/api/objects${categoryIds ? `?category=${encodeURIComponent(categoryIds.join(','))}` : '?excludeCategory=medical-pharmacy'}`, signal),
+    `/api/objects${categoryIds ? `?category=${encodeURIComponent(categoryIds.join(','))}` : '?excludeCategory=medical-pharmacy&excludeCategoryPrefix=road-'}`, signal),
   getObject: (id: string, signal?: AbortSignal) => get<MapObject>(`/api/objects/${encodeURIComponent(id)}`, signal),
   getCategories: (signal?: AbortSignal) => get<Category[]>('/api/categories', signal),
 };

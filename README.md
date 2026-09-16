@@ -5,6 +5,12 @@ Master Specification: [KARTASPB_AI_AGENT_SPEC.md](KARTASPB_AI_AGENT_SPEC.md).
 
 ## Текущий этап
 
+SPRINT 13 — дорожная инфраструктура: 5 594 реальных OSM-объекта,
+структурированные сегменты КАД и ЗСД, съезды, явно размеченные развязки,
+bbox API и отдельные слои. После запуска выполните
+`docker compose exec backend python -m app.roads`. Дороги загружаются картой
+по текущей области; расстояния в API вычисляются по прямой, без routing.
+
 SPRINT 12 — медицинская инфраструктура Петербурга: 5 248 физических объектов
 из снимка OSM, отдельная медицинская модель, услуги и организации, bbox API,
 слои клиник и аптек. После запуска выполните
@@ -88,6 +94,9 @@ docker compose up --build --wait
 - Nearby kindergartens: `GET /api/kindergartens/nearby?lon=30.3158&lat=59.9391`
 - Medical: `GET /api/medical?bbox=30.2,59.8,30.4,60.0&type=hospital`
 - Pharmacies: `GET /api/medical/pharmacies.geojson?bbox=30.2,59.8,30.4,60.0`
+- Roads: `GET /api/roads?bbox=30.2,59.8,30.4,60.0&corridor=kad`
+- Road viewport: `GET /api/roads/viewport.geojson?bbox=30.2,59.8,30.4,60.0`
+- Nearest roads: `GET /api/analysis/roads/nearest?lon=30.3158&lat=59.9391`
 
 Compose ждёт БД, выполняет `alembic upgrade head`, затем запускает API и frontend.
 БД хранится в named volume, порт БД наружу не публикуется.

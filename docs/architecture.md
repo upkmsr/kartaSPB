@@ -1,5 +1,20 @@
 # Архитектура
 
+## SPRINT 13 — Roads
+
+`app.roads` converts a dated OSM road snapshot into canonical LineString and
+Point objects through the SPRINT 5 pipeline. Specialized `roads` rows store
+road class/type, `kad`/`zsd`/`other` corridor, source tags and confidence;
+geometry and provenance remain in CORE. The canonical GiST index and a partial
+road GiST index support bbox queries. Only source-tagged `motorway_junction`
+nodes become interchange points; ramp geometry comes from source ways.
+
+The React object list excludes road categories. MapLibre fetches only enabled
+road categories within the viewport from `/api/roads/viewport.geojson` and
+renders line/point layers. Clicks fetch the canonical Object Card by ID.
+`/api/analysis/roads/nearest` reports straight-line PostGIS geography distance,
+not network routing or travel time.
+
 ## SPRINT 12 — Medical
 
 `app.medical` reuses the canonical ingestion pipeline, source registry, staging,

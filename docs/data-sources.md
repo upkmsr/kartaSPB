@@ -1,5 +1,39 @@
 # Источники данных
 
+## SPRINT 13 — Roads
+
+- Underlying data: [OpenStreetMap](https://www.openstreetmap.org/copyright),
+  license ODbL 1.0, attribution © OpenStreetMap contributors. The raw filtered
+  snapshot is `backend/app/roads/snapshots/spb_roads.json` and retains each
+  element's OSM type/ID, tags, geometry, retrieval method and source timestamp.
+- City arterials came from the free [BBBike Petersburg PBF extract](https://download.bbbike.org/osm/bbbike/SanktPetersburg/)
+  with source timestamp 2026-09-11T23:00:00Z and bbox
+  `30.042,59.796,30.630,60.071`. Filter: `motorway`, `trunk`, `primary` and
+  their `_link` ways, plus explicitly tagged `motorway_junction` nodes.
+- Outer-ring motorway segments and junctions came from a bounded query to
+  [Overpass Private.coffee](https://overpass.private.coffee/api/interpreter),
+  bbox `29.50,59.60,31.00,60.30`, source timestamp
+  2026-07-15T15:22:01Z. It fills the KAD coverage outside the city extract.
+  BBBike records take precedence for duplicate OSM type/IDs; no spatial/name
+  proximity merging is used. Both retrieval URLs and times are in the snapshot.
+- The resulting 5,594 unique features include 607 KAD segments identified by
+  source `ref=А-118` or explicit KAD name, 244 ZSD segments identified by
+  explicit ZSD name, and 40 `motorway_junction` nodes. Link ways are kept as
+  ramps; an entry versus exit direction is not inferred without source tags.
+  `toll` remains NULL unless tagged `yes` or `no`; speed/lanes/access are saved
+  only if provided. Confidence measures tag completeness, not road quality.
+- Source Registry records OSM license, attribution, collection methods and
+  limitations; ingestion runs/staging/object provenance record import time,
+  original tags and stable IDs. Ways are represented as source node-based
+  LineStrings, never invented corridors. No operator data, road condition or
+  travel time is inferred.
+- Limitations: city PBF and outer motorway bbox are bounded, so the dataset is
+  not a complete regional road graph. The Overpass portion is older than the
+  city PBF; tags may have changed. Major roads outside the city extract other
+  than motorways are missing. Official road inventories were researched, but
+  no reusable geocoded source with clear terms was incorporated. This module
+  is not a routing engine.
+
 ## SPRINT 12 — Medical
 
 - Source: [OpenStreetMap](https://www.openstreetmap.org/copyright), queried once

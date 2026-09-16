@@ -94,6 +94,14 @@ docker compose run --rm -e RUN_DB_TESTS=1 backend pytest -m integration
 нормальное состояние в `docker compose ps -a` — `Exited (0)`. Остальные сервисы
 (`db`, `backend`, `frontend`) должны быть `healthy`.
 
+## Roads import (SPRINT 13)
+
+After `docker compose up --build --wait`, run
+`docker compose exec backend python -m app.roads`. The checked-in bounded OSM
+snapshot is imported idempotently. The map requests selected road categories
+for the current viewport from `/api/roads/viewport.geojson`; the analysis API
+reports straight-line distances and does not perform routing.
+
 ## Medical import (SPRINT 12)
 
 After `docker compose up --build --wait`, run

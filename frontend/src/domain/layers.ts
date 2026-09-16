@@ -2,7 +2,8 @@ export type ProjectLayerId =
   | 'districts' | 'demo-object' | 'nature-green' | 'nature-water'
   | 'metro-lines' | 'metro-stations' | 'metro-entrances'
   | 'transport-bus' | 'transport-tram' | 'transport-trolleybus' | 'transport-stops'
-  | 'schools' | 'school-catchments' | 'kindergartens' | 'medical' | 'pharmacies';
+  | 'schools' | 'school-catchments' | 'kindergartens' | 'medical' | 'pharmacies'
+  | 'road-major' | 'road-kad' | 'road-zsd' | 'road-interchanges';
 
 export interface LayerDefinition {
   id: ProjectLayerId;
@@ -31,6 +32,10 @@ export const initialLayerRegistry: LayerRegistry = {
   kindergartens: { id: 'kindergartens', name: 'Детские сады', visible: true, opacity: 1, order: 140 },
   medical: { id: 'medical', name: 'Медицина', visible: true, opacity: 1, order: 150 },
   pharmacies: { id: 'pharmacies', name: 'Аптеки', visible: false, opacity: 1, order: 160 },
+  'road-major': { id: 'road-major', name: 'Крупные дороги', visible: false, opacity: 0.55, order: 170 },
+  'road-kad': { id: 'road-kad', name: 'КАД', visible: true, opacity: 0.7, order: 180 },
+  'road-zsd': { id: 'road-zsd', name: 'ЗСД', visible: true, opacity: 0.7, order: 190 },
+  'road-interchanges': { id: 'road-interchanges', name: 'Развязки и съезды', visible: false, opacity: 0.6, order: 200 },
 };
 
 export function updateLayer(

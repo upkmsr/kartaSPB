@@ -76,7 +76,8 @@ it('mounts a map container and supplies one separate GeoJSON source with a stabl
   });
   expect(maps[0].addSource).toHaveBeenCalledWith('districts', expect.objectContaining({ type: 'geojson' }));
   expect(maps[0].addSource).toHaveBeenCalledWith('pharmacies', expect.objectContaining({ cluster: true }));
-  expect(maps[0].addLayer).toHaveBeenCalledTimes(22);
+  expect(maps[0].addSource).toHaveBeenCalledWith('roads', expect.objectContaining({ type: 'geojson' }));
+  expect(maps[0].addLayer).toHaveBeenCalledTimes(27);
   expect(districts).toHaveLength(18);
   expect(demoObjects).toHaveLength(1);
   expect(rawPoint.type).toBe('Feature');
