@@ -2,7 +2,7 @@ export type ProjectLayerId =
   | 'districts' | 'demo-object' | 'nature-green' | 'nature-water'
   | 'metro-lines' | 'metro-stations' | 'metro-entrances'
   | 'transport-bus' | 'transport-tram' | 'transport-trolleybus' | 'transport-stops'
-  | 'schools' | 'school-catchments' | 'kindergartens';
+  | 'schools' | 'school-catchments' | 'kindergartens' | 'medical' | 'pharmacies';
 
 export interface LayerDefinition {
   id: ProjectLayerId;
@@ -29,6 +29,8 @@ export const initialLayerRegistry: LayerRegistry = {
   schools: { id: 'schools', name: 'Школы', visible: true, opacity: 1, order: 120 },
   'school-catchments': { id: 'school-catchments', name: 'Закреплённые территории школ', visible: false, opacity: 0.5, order: 130 },
   kindergartens: { id: 'kindergartens', name: 'Детские сады', visible: true, opacity: 1, order: 140 },
+  medical: { id: 'medical', name: 'Медицина', visible: true, opacity: 1, order: 150 },
+  pharmacies: { id: 'pharmacies', name: 'Аптеки', visible: false, opacity: 1, order: 160 },
 };
 
 export function updateLayer(

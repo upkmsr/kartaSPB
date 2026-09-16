@@ -1,5 +1,22 @@
 # Архитектура
 
+## SPRINT 12 — Medical
+
+`app.medical` reuses the canonical ingestion pipeline, source registry, staging,
+validation, stable OSM IDs and provenance. `medical_facilities` stores medical
+fields separately from `project_objects`; `medical_services` stores tagged
+specializations, and `medical_organizations` groups only source-provided brands
+or operators. Each mapped OSM facility remains a separate point, even when it
+belongs to a network. Ownership is `public`, `private` or `unknown`; absent
+operator evidence is never inferred from a clinic name.
+
+`/api/medical` supports indexed bbox, subtype, ownership and 24h filters with
+limit/offset pagination.
+Pharmacies are excluded from the initial canonical-object response used by React.
+MapLibre requests `/api/medical/pharmacies.geojson` for the current viewport,
+clusters the points and fetches individual Object Cards by canonical ID. Two
+Layer Registry entries control medical facilities and pharmacies independently.
+
 ## SPRINT 11 — Kindergartens
 
 `app.kindergartens` uses the same ingestion pipeline and shared `app.education`

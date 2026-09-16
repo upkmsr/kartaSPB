@@ -41,7 +41,9 @@ export function App() {
     return () => { active = false; controller.abort(); window.clearTimeout(timeout); };
   }, [dataAttempt]);
   const selectObject = useCallback((id: string) => {
-    setSelectedObject(objects.find((object) => object.id === id) ?? null);
+    const local = objects.find((object) => object.id === id);
+    if (local) { setSelectedObject(local); return; }
+    objectsApi.getObject(id).then(setSelectedObject).catch(() => setSelectedObject(null));
   }, [objects]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [attempt, setAttempt] = useState(0);

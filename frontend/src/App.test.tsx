@@ -25,6 +25,8 @@ const { maps, MockMap } = vi.hoisted(() => {
     setPaintProperty = vi.fn();
     setLayoutProperty = vi.fn();
     flyTo = vi.fn();
+    easeTo = vi.fn();
+    getBounds = () => ({ getWest: () => 29.8, getSouth: () => 59.7, getEast: () => 30.7, getNorth: () => 60.2 });
     getZoom = vi.fn(() => 12);
     renderedFeatures: RenderedFeature[] = [];
     queryRenderedFeatures = vi.fn(() => this.renderedFeatures);
@@ -54,7 +56,7 @@ vi.mock('maplibre-gl', () => ({
 beforeEach(() => {
   maps.length = 0;
   vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
-  vi.stubGlobal('fetch', vi.fn(async (url: string) => new Response(JSON.stringify(url === '/api/objects' ? demoObjects : url === '/api/categories' ? [{ id: 'demo', name: 'Демонстрационные', description: '', color: '#77dfcc', defaultVisible: true }, { id: 'other', name: 'Прочее', description: '', color: '#ffc078', defaultVisible: true }] : { status: 'ok' }))));
+  vi.stubGlobal('fetch', vi.fn(async (url: string) => new Response(JSON.stringify(url.startsWith('/api/objects?') ? demoObjects : url === '/api/categories' ? [{ id: 'demo', name: 'Демонстрационные', description: '', color: '#77dfcc', defaultVisible: true }, { id: 'other', name: 'Прочее', description: '', color: '#ffc078', defaultVisible: true }] : { status: 'ok' }))));
 });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
@@ -73,7 +75,8 @@ it('mounts a map container and supplies one separate GeoJSON source with a stabl
     type: 'geojson', data: toGeoJSON(demoObjects),
   });
   expect(maps[0].addSource).toHaveBeenCalledWith('districts', expect.objectContaining({ type: 'geojson' }));
-  expect(maps[0].addLayer).toHaveBeenCalledTimes(19);
+  expect(maps[0].addSource).toHaveBeenCalledWith('pharmacies', expect.objectContaining({ cluster: true }));
+  expect(maps[0].addLayer).toHaveBeenCalledTimes(22);
   expect(districts).toHaveLength(18);
   expect(demoObjects).toHaveLength(1);
   expect(rawPoint.type).toBe('Feature');
@@ -176,6 +179,10 @@ it('filters one and multiple categories locally and restores all without recreat
     ['!', ['in', ['get', 'categoryId'], ['literal', [
       'metro-station', 'metro-entrance', 'transport-stop', 'school',
       'kindergarten-public', 'kindergarten-private', 'kindergarten-unknown',
+      'medical-public_polyclinic', 'medical-children_polyclinic', 'medical-hospital',
+      'medical-private_multispecialty_clinic', 'medical-diagnostic_center',
+      'medical-laboratory', 'medical-dentistry', 'medical-womens_health',
+      'medical-specialized_center', 'medical-trauma_center', 'medical-emergency_or_24h',
     ]]]],
   ]);
   fireEvent.click(demo);
@@ -188,7 +195,7 @@ it('filters one and multiple categories locally and restores all without recreat
 });
 
 it('keeps the district UI and map mounted when object API fails and allows retry', async () => {
-  vi.mocked(fetch).mockImplementation(async (url) => new Response(JSON.stringify({ status: 'ok' }), { status: url === '/api/objects' ? 503 : 200 }));
+  vi.mocked(fetch).mockImplementation(async (url) => new Response(JSON.stringify({ status: 'ok' }), { status: String(url).startsWith('/api/objects?') ? 503 : 200 }));
   render(<App />);
   expect(await screen.findByRole('alert')).toBeTruthy();
   expect(screen.getByRole('checkbox', { name: districts[0].properties.name })).toBeTruthy();

@@ -34,7 +34,9 @@ class MapObject(BaseModel):
 
 
 def read_objects(
-    category: Optional[str] = None, object_id: Optional[str] = None
+    category: Optional[str] = None,
+    object_id: Optional[str] = None,
+    exclude_category: Optional[str] = None,
 ) -> list[MapObject]:
     query = """SELECT id, name, category_id AS "categoryId", description,
         ST_AsGeoJSON(geometry)::json AS geometry, properties, source, source_id AS "sourceId"
@@ -46,6 +48,9 @@ def read_objects(
     if category is not None:
         query += " AND category_id IN :categories"
         params["categories"] = [value.strip() for value in category.split(",") if value.strip()]
+    if exclude_category is not None:
+        query += " AND category_id != :exclude_category"
+        params["exclude_category"] = exclude_category
     statement = text(query + " ORDER BY id")
     if category is not None:
         statement = statement.bindparams(bindparam("categories", expanding=True, type_=String))
@@ -78,9 +83,12 @@ def categories() -> list[Category]:
 
 
 @router.get("/objects")
-def objects(category: Optional[str] = Query(default=None, max_length=500)) -> list[MapObject]:
+def objects(
+    category: Optional[str] = Query(default=None, max_length=500),
+    exclude_category: Optional[str] = Query(default=None, alias="excludeCategory"),
+) -> list[MapObject]:
     try:
-        return read_objects(category=category)
+        return read_objects(category=category, exclude_category=exclude_category)
     except SQLAlchemyError:
         raise unavailable() from None
 

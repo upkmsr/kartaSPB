@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 from app.database import check_database, get_engine
 from app.imports import router as import_router
 from app.kindergartens.api import router as kindergartens_router
+from app.medical.api import router as medical_router
 from app.metro.api import router as metro_router
 from app.objects import router
 from app.schools.api import router as schools_router
@@ -31,6 +32,7 @@ app.include_router(metro_router)
 app.include_router(transport_router)
 app.include_router(schools_router)
 app.include_router(kindergartens_router)
+app.include_router(medical_router)
 
 
 @app.get("/api/health/live")

@@ -1,5 +1,12 @@
 # Changelog
 
+## SPRINT 12
+
+- Imported 5,248 named medical facilities from a dated Petersburg OSM snapshot,
+  including clinics, hospitals, diagnostics, laboratories, dentistry and pharmacies.
+- Added medical organizations, services, provenance, ownership confidence, spatial
+  API and independent medical/pharmacy layers with viewport pharmacy clustering.
+
 ## SPRINT 11
 
 - Added real public/private/unknown kindergarten import, specialized fields,

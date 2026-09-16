@@ -1,5 +1,10 @@
 # Модули
 
+SPRINT 12 adds `medical`: 5,248 physical facilities imported from a dated OSM
+snapshot; specialized facility, organization and service tables; bbox-filtered
+API; medical/pharmacy layers and canonical Object Cards. Pharmacy points load
+per viewport and cluster in MapLibre.
+
 SPRINT 11 adds `kindergartens`: a specialized model/API, real OSM importer,
 public/private/unknown categories, a registered map layer and basic proximity
 analysis. It reuses education normalization and the ingestion platform.

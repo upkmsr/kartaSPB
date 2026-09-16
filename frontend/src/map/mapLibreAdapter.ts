@@ -29,6 +29,10 @@ const TRANSPORT_STOPS = 'transport-stops';
 const SCHOOL_POINTS = 'school-points';
 const SCHOOL_CATCHMENTS = 'school-catchments';
 const KINDERGARTEN_POINTS = 'kindergarten-points';
+const MEDICAL_POINTS = 'medical-points';
+const PHARMACY_SOURCE = 'pharmacies';
+const PHARMACY_CLUSTERS = 'pharmacy-clusters';
+const PHARMACY_POINTS = 'pharmacy-points';
 const SEARCH_SOURCE = 'search-result';
 const SEARCH_LAYER = 'search-result-marker';
 const MAP_LAYERS: Record<ProjectLayerId, readonly string[]> = {
@@ -46,6 +50,8 @@ const MAP_LAYERS: Record<ProjectLayerId, readonly string[]> = {
   schools: [SCHOOL_POINTS],
   'school-catchments': [SCHOOL_CATCHMENTS],
   kindergartens: [KINDERGARTEN_POINTS],
+  medical: [MEDICAL_POINTS],
+  pharmacies: [PHARMACY_CLUSTERS, PHARMACY_POINTS],
 };
 
 interface MapCallbacks {
@@ -84,6 +90,10 @@ export function createMap(
       '!', ['in', ['get', 'categoryId'], ['literal', [
         'metro-station', 'metro-entrance', 'transport-stop', 'school',
         'kindergarten-public', 'kindergarten-private', 'kindergarten-unknown',
+        'medical-public_polyclinic', 'medical-children_polyclinic', 'medical-hospital',
+        'medical-private_multispecialty_clinic', 'medical-diagnostic_center',
+        'medical-laboratory', 'medical-dentistry', 'medical-womens_health',
+        'medical-specialized_center', 'medical-trauma_center', 'medical-emergency_or_24h',
       ]]],
     ]]);
     for (const [layer, category] of [
@@ -96,6 +106,12 @@ export function createMap(
     map.setFilter(KINDERGARTEN_POINTS, ['all', visible, ['in', ['get', 'categoryId'], [
       'literal', ['kindergarten-public', 'kindergarten-private', 'kindergarten-unknown'],
     ]]]);
+    map.setFilter(MEDICAL_POINTS, ['all', visible, ['in', ['get', 'categoryId'], ['literal', [
+      'medical-public_polyclinic', 'medical-children_polyclinic', 'medical-hospital',
+      'medical-private_multispecialty_clinic', 'medical-diagnostic_center',
+      'medical-laboratory', 'medical-dentistry', 'medical-womens_health',
+      'medical-specialized_center', 'medical-trauma_center', 'medical-emergency_or_24h',
+    ]]]]);
     map.setFilter(METRO_LINE, ['all', visible, ['==', ['get', 'categoryId'], 'metro-line']]);
     map.setFilter(METRO_STATION, ['all', visible, ['==', ['get', 'categoryId'], 'metro-station']]);
     map.setFilter(METRO_ENTRANCE, ['all', visible, ['==', ['get', 'categoryId'], 'metro-entrance']]);
@@ -109,6 +125,8 @@ export function createMap(
       ? ['match', ['get', 'categoryId'], ...categories.flatMap((category) => [category.id, category.color]), '#a4b5c5'] as unknown as ExpressionSpecification
       : ['literal', '#a4b5c5'];
     map.setPaintProperty(OBJECT_LAYER, 'circle-color', color);
+    const showPharmacies = Boolean(registry?.pharmacies.visible && visibleCategories.includes('medical-pharmacy'));
+    for (const layer of MAP_LAYERS.pharmacies) map.setLayoutProperty(layer, 'visibility', showPharmacies ? 'visible' : 'none');
   };
 
   const selectionFilter = (): FilterSpecification => ['in', ['get', 'id'], ['literal', [...selectedIds]]];
@@ -126,7 +144,7 @@ export function createMap(
     if (!loaded || !registry) return;
     for (const layer of orderedLayers(registry)) {
       for (const mapLayer of MAP_LAYERS[layer.id]) {
-        map.setLayoutProperty(mapLayer, 'visibility', layer.visible ? 'visible' : 'none');
+        map.setLayoutProperty(mapLayer, 'visibility', layer.visible && (layer.id !== 'pharmacies' || visibleCategories.includes('medical-pharmacy')) ? 'visible' : 'none');
       }
     }
     map.setPaintProperty(DISTRICT_OUTLINE, 'line-opacity', registry.districts.opacity);
@@ -147,6 +165,9 @@ export function createMap(
     map.setPaintProperty(SCHOOL_POINTS, 'circle-opacity', registry.schools.opacity);
     map.setPaintProperty(SCHOOL_CATCHMENTS, 'fill-opacity', registry['school-catchments'].opacity);
     map.setPaintProperty(KINDERGARTEN_POINTS, 'circle-opacity', registry.kindergartens.opacity);
+    map.setPaintProperty(MEDICAL_POINTS, 'circle-opacity', registry.medical.opacity);
+    map.setPaintProperty(PHARMACY_POINTS, 'circle-opacity', registry.pharmacies.opacity);
+    map.setPaintProperty(PHARMACY_CLUSTERS, 'circle-opacity', registry.pharmacies.opacity);
     applySelection();
   };
 
@@ -162,6 +183,7 @@ export function createMap(
     map.addSource(SOURCES['demo-object'], { type: 'geojson', data: toGeoJSON(currentObjects) });
     map.addSource(SEARCH_SOURCE, { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
     map.addSource(SCHOOL_CATCHMENTS, { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+    map.addSource(PHARMACY_SOURCE, { type: 'geojson', data: { type: 'FeatureCollection', features: [] }, cluster: true, clusterRadius: 45 });
     const definitions: AddLayerObject[] = [
       { id: DISTRICT_FILL, type: 'fill', source: SOURCES.districts, paint: { 'fill-color': '#17343c', 'fill-opacity': 0.14 } },
       { id: DISTRICT_OUTLINE, type: 'line', source: SOURCES.districts, paint: { 'line-color': '#76a9ad', 'line-width': 1.2, 'line-opacity': 0.7 } },
@@ -186,6 +208,16 @@ export function createMap(
         'circle-color': ['match', ['get', 'categoryId'], 'kindergarten-public', '#b178dc', 'kindergarten-private', '#d76caa', '#a8a3b6'],
         'circle-stroke-width': 2, 'circle-stroke-color': '#392448',
       } },
+      { id: MEDICAL_POINTS, type: 'circle', source: SOURCES['demo-object'], filter: ['in', ['get', 'categoryId'], ['literal', []]], paint: {
+        'circle-radius': 5, 'circle-color': '#57c6c2', 'circle-stroke-width': 1.5, 'circle-stroke-color': '#174d58',
+      } },
+      { id: PHARMACY_CLUSTERS, type: 'circle', source: PHARMACY_SOURCE, filter: ['has', 'point_count'], paint: {
+        'circle-radius': ['step', ['get', 'point_count'], 12, 20, 17, 100, 22], 'circle-color': '#4fad73',
+        'circle-stroke-width': 2, 'circle-stroke-color': '#1a5134',
+      } },
+      { id: PHARMACY_POINTS, type: 'circle', source: PHARMACY_SOURCE, filter: ['!', ['has', 'point_count']], paint: {
+        'circle-radius': 4, 'circle-color': '#68bb87', 'circle-stroke-width': 1, 'circle-stroke-color': '#1a5134',
+      } },
       { id: OBJECT_LAYER, type: 'circle', source: SOURCES['demo-object'], paint: { 'circle-radius': 13, 'circle-color': '#77dfcc', 'circle-stroke-width': 4, 'circle-stroke-color': '#163e42' } },
       { id: DISTRICT_SELECTED, type: 'line', source: SOURCES.districts, filter: ['in', ['get', 'id'], ['literal', []]], paint: { 'line-color': '#b8fff2', 'line-width': 3, 'line-opacity': 0.7 } },
       { id: SEARCH_LAYER, type: 'circle', source: SEARCH_SOURCE, paint: { 'circle-radius': 10, 'circle-color': '#ffc078', 'circle-stroke-width': 4, 'circle-stroke-color': '#402d19' } },
@@ -196,7 +228,15 @@ export function createMap(
     applySelection();
     applyCategories();
     callbacks.onReady();
+    refreshPharmacies();
   });
+  const refreshPharmacies = () => {
+    if (!loaded || !registry?.pharmacies.visible || !visibleCategories.includes('medical-pharmacy')) return;
+    const bounds = map.getBounds();
+    const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()].join(',');
+    (map.getSource(PHARMACY_SOURCE) as GeoJSONSource).setData(`/api/medical/pharmacies.geojson?bbox=${encodeURIComponent(bbox)}`);
+  };
+  map.on('moveend', refreshPharmacies);
   map.on('click', (event) => {
     if (!loaded) return;
     const objectLayers = [
@@ -205,11 +245,17 @@ export function createMap(
       BUS_ROUTES, TRAM_ROUTES, TROLLEYBUS_ROUTES, TRANSPORT_STOPS,
       SCHOOL_POINTS,
       KINDERGARTEN_POINTS,
+      MEDICAL_POINTS, PHARMACY_POINTS,
     ];
     const features = map.queryRenderedFeatures(event.point, { layers: [...objectLayers, DISTRICT_FILL] });
     const object = features.find((feature) => objectLayers.includes(feature.layer.id));
     const objectId = object?.properties.id ?? object?.id;
     if (typeof objectId === 'string') { callbacks.onObjectClick(objectId); return; }
+    const cluster = map.queryRenderedFeatures(event.point, { layers: [PHARMACY_CLUSTERS] })[0];
+    if (cluster?.geometry?.type === 'Point') {
+      map.easeTo({ center: cluster.geometry.coordinates as [number, number], zoom: map.getZoom() + 2 });
+      return;
+    }
     const district = features.find((feature) => feature.layer.id === DISTRICT_FILL);
     const id = district?.properties.id;
     if (typeof id === 'string' && id.startsWith('district-osm-relation-')) callbacks.onDistrictClick(id as DistrictId);
@@ -223,6 +269,7 @@ export function createMap(
         BUS_ROUTES, TRAM_ROUTES, TROLLEYBUS_ROUTES, TRANSPORT_STOPS,
         SCHOOL_POINTS,
         KINDERGARTEN_POINTS,
+        MEDICAL_POINTS, PHARMACY_POINTS, PHARMACY_CLUSTERS,
       ],
     }).length ? 'pointer' : '';
   });
@@ -231,13 +278,13 @@ export function createMap(
   return {
     resize: () => map.resize(), remove: () => map.remove(),
     setSelectedDistricts: (ids: readonly DistrictId[]) => { selectedIds = ids; applySelection(); },
-    setLayers: (layers: LayerRegistry) => { registry = layers; applyLayers(); },
+    setLayers: (layers: LayerRegistry) => { registry = layers; applyLayers(); refreshPharmacies(); },
     setObjects: (data: MapObject[]) => {
       currentObjects = data;
       if (loaded) (map.getSource(SOURCES['demo-object']) as GeoJSONSource).setData(toGeoJSON(data));
     },
     setCategories: (definitions: Category[], ids: string[]) => {
-      categories = definitions; visibleCategories = ids; applyCategories();
+      categories = definitions; visibleCategories = ids; applyCategories(); refreshPharmacies();
     },
     focus: (target: MapTarget) => {
       if (!loaded) return;

@@ -94,6 +94,18 @@ docker compose run --rm -e RUN_DB_TESTS=1 backend pytest -m integration
 нормальное состояние в `docker compose ps -a` — `Exited (0)`. Остальные сервисы
 (`db`, `backend`, `frontend`) должны быть `healthy`.
 
+## Medical import (SPRINT 12)
+
+After `docker compose up --build --wait`, run
+`docker compose exec backend python -m app.medical`. This imports the checked-in
+OSM snapshot into canonical objects and the specialized medical tables. Running
+it again updates existing OSM IDs. Inspect with
+`docker compose exec backend alembic current`,
+`GET /api/medical?bbox=30.2,59.8,30.4,60.0` and
+`GET /api/medical/pharmacies.geojson?bbox=30.2,59.8,30.4,60.0`.
+The pharmacy endpoint requires bbox and caps results at 3,000; the map loads
+only the visible area when its pharmacy layer is enabled.
+
 ## Зависимости
 
 `package-lock.json` фиксирует npm дерево. `requirements.lock` фиксирует Python

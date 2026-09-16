@@ -35,6 +35,18 @@ export function ObjectCard({ object, categoryName = 'Нет данных', onClo
         <div><dt>Актуальность источника</dt><dd>{String(object.properties.sourceDataAt || 'Нет данных')}</dd></div>
         <div><dt>Уверенность данных</dt><dd>{typeof object.properties.confidence === 'number' ? `${Math.round(object.properties.confidence * 100)}%` : 'Нет данных'}</dd></div>
       </>}
+      {object.categoryId.startsWith('medical-') && <>
+        <div><dt>Форма собственности</dt><dd>{object.properties.ownershipType === 'public' ? 'Государственная' : object.properties.ownershipType === 'private' ? 'Частная' : 'Неизвестна'}</dd></div>
+        <div><dt>Адрес</dt><dd>{String(object.properties.address || 'Нет данных')}</dd></div>
+        {object.properties.organization && <div><dt>Организация / сеть</dt><dd>{String(object.properties.organization)}</dd></div>}
+        {object.properties.openingHours && <div><dt>Часы работы</dt><dd>{String(object.properties.openingHours)}</dd></div>}
+        {object.properties.is24h === true && <div><dt>Круглосуточно</dt><dd>Да</dd></div>}
+        {object.properties.phone && <div><dt>Телефон</dt><dd>{String(object.properties.phone)}</dd></div>}
+        {object.properties.website && <div><dt>Сайт</dt><dd>{String(object.properties.website)}</dd></div>}
+        {Array.isArray(object.properties.services) && object.properties.services.length > 0 && <div><dt>Специализации</dt><dd>{object.properties.services.join(', ')}</dd></div>}
+        <div><dt>Актуальность источника</dt><dd>{String(object.properties.sourceDataAt || 'Нет данных')}</dd></div>
+        <div><dt>Уверенность данных</dt><dd>{typeof object.properties.confidence === 'number' ? `${Math.round(object.properties.confidence * 100)}%` : 'Нет данных'}</dd></div>
+      </>}
     </dl>
     <p className="card-description">{object.description || 'Нет данных'}</p>
   </aside>;

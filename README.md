@@ -5,6 +5,13 @@ Master Specification: [KARTASPB_AI_AGENT_SPEC.md](KARTASPB_AI_AGENT_SPEC.md).
 
 ## Текущий этап
 
+SPRINT 12 — медицинская инфраструктура Петербурга: 5 248 физических объектов
+из снимка OSM, отдельная медицинская модель, услуги и организации, bbox API,
+слои клиник и аптек. После запуска выполните
+`docker compose exec backend python -m app.medical`. Аптеки загружаются по
+текущей области карты и группируются MapLibre. Значение `unknown` означает,
+что тип собственности не подтверждён источником.
+
 SPRINT 11 — детские сады Петербурга: отдельная модель/API, слой и фильтры
 государственных/частных садов. После запуска выполните
 `docker compose exec backend python -m app.kindergartens`.
@@ -79,6 +86,8 @@ docker compose up --build --wait
 - School catchment status: `GET /api/schools/catchments`
 - Kindergartens: `GET /api/kindergartens?bbox=30.2,59.8,30.4,60.0`
 - Nearby kindergartens: `GET /api/kindergartens/nearby?lon=30.3158&lat=59.9391`
+- Medical: `GET /api/medical?bbox=30.2,59.8,30.4,60.0&type=hospital`
+- Pharmacies: `GET /api/medical/pharmacies.geojson?bbox=30.2,59.8,30.4,60.0`
 
 Compose ждёт БД, выполняет `alembic upgrade head`, затем запускает API и frontend.
 БД хранится в named volume, порт БД наружу не публикуется.
@@ -102,4 +111,4 @@ npm run build
 ```
 
 См. [разработка](docs/development.md), [архитектура](docs/architecture.md),
-[отчёт SPRINT 3](docs/sprint-3.md), [изменения](CHANGELOG.md).
+[отчёты по спринтам](docs/README.md), [изменения](CHANGELOG.md).

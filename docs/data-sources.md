@@ -1,5 +1,51 @@
 # Источники данных
 
+## SPRINT 12 — Medical
+
+- Source: [OpenStreetMap](https://www.openstreetmap.org/copyright), queried once
+  through [Overpass API](https://overpass-api.de/api/interpreter) for OSM Petersburg
+  area `3600337422` on 2026-09-16. Query covers `amenity` hospital, clinic,
+  doctors, dentist, pharmacy and `healthcare` hospital, clinic, doctor,
+  dentist, laboratory, centre, pharmacy. Raw response is preserved at
+  `backend/app/medical/snapshots/spb_medical.json`; its OSM base timestamp is
+  `2026-09-16T12:25:27Z`. License: ODbL 1.0. Attribution: © OpenStreetMap
+  contributors. Collection method: single read-only Overpass snapshot query;
+  source registry stores URL, license, attribution, priority and limitations.
+- 5,503 OSM elements were returned. 5,248 named, non-veterinary features with
+  coordinates were imported. Nodes and provider-computed way/relation centers
+  are separate physical points keyed by OSM type and ID; they are not entrances.
+  Reimport updates those IDs and provenance without multiplying facilities.
+  `brand`/`operator`, when supplied, groups facilities as an organization but
+  does not collapse branches. The snapshot includes СМ-Клиника and Немецкая
+  семейная клиника along with many other organizations.
+- Ownership is public only for explicit `operator:type=public/government` or
+  source-provided ГБУЗ operator; private for `operator:type=private` or an
+  explicit ООО/ИП legal form in the operator tag. Otherwise it remains
+  `unknown`. This import has 28 public, 284 private and 4,936 unknown records;
+  these counts describe tagging quality, not the true public/private
+  distribution. Facility subtype uses amenity/healthcare
+  tags and explicit names/speciality where needed. 789 source-tagged service
+  values are retained; OSM `ref` is stored verbatim as a source identifier and
+  is not independently validated as an official registry ID. Rating and review
+  counts remain empty.
+- `opening_hours=24/7` is the only 24h assertion (255 imported facilities).
+  Emergency tags are preserved separately (43 facilities). Confidence is a
+  field-completeness measure from 0.45 to 0.95,
+  never a clinical-quality score. `source_data_at` is the OSM snapshot time;
+  import time is stored in provenance and `source_checked_at`. Last verification
+  is 2026-09-16 for this snapshot, not continuous monitoring.
+- Limitations: OSM is community maintained and incomplete; government and
+  private inventories are not validated against official registries. Addresses,
+  opening hours, specializations and ownership may be stale or missing. The
+  module is not a real-time emergency directory. No paid or restricted API is
+  used. Public Overpass is used only for this bounded development import, not
+  called by application users.
+- Official source discovery: the [Saint Petersburg territorial OMS fund](https://spboms.ru/sistema-oms/meditsinskim-organizatsiyam/)
+  publishes a 2026 organization registry. It was reviewed as a higher-priority
+  reference, but not merged into the point layer: an organization registry is
+  not a verified geocoded branch list, and linking names to individual OSM
+  points would risk false branch matches. It is not counted as an imported source.
+
 ## SPRINT 11 — Kindergartens
 
 - Source: OpenStreetMap `amenity=kindergarten` nodes, ways and relations within
