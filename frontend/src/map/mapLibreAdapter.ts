@@ -1,11 +1,13 @@
-import { AttributionControl, Map, NavigationControl } from 'maplibre-gl';
-import type { AddLayerObject, ExpressionSpecification, FilterSpecification } from 'maplibre-gl';
+import { AttributionControl, Map, NavigationControl, setWorkerUrl } from 'maplibre-gl';
+import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
+import type { AddLayerObject, ExpressionSpecification, FilterSpecification, GeoJSONSource } from 'maplibre-gl';
 import type { FeatureCollection, MultiPolygon, Polygon } from 'geojson';
 import type { MapConfig } from '../config/map';
 import type { DistrictId, DistrictProperties } from '../domain/district';
 import type { LayerRegistry, ProjectLayerId } from '../domain/layers';
 import { orderedLayers } from '../domain/layers';
-import type { MapObject } from '../domain/mapObject';
+import type { Category, MapObject } from '../domain/mapObject';
+import { toGeoJSON } from '../domain/mapObject';
 
 const SOURCES = { districts: 'districts', 'demo-object': 'demo-objects' } as const;
 const DISTRICT_FILL = 'district-fill';
@@ -31,6 +33,7 @@ export function createMap(
   districtData: FeatureCollection<Polygon | MultiPolygon, DistrictProperties>,
   callbacks: MapCallbacks,
 ) {
+  setWorkerUrl(workerUrl);
   const map = new Map({
     container, style: config.style.url, center: config.center, zoom: config.zoom,
     attributionControl: false, dragRotate: false, pitchWithRotate: false, touchPitch: false,
@@ -42,6 +45,17 @@ export function createMap(
   let loaded = false;
   let selectedIds: readonly DistrictId[] = [];
   let registry: LayerRegistry | undefined;
+  let currentObjects = objects;
+  let categories: Category[] = [];
+  let visibleCategories: string[] = [];
+  const applyCategories = () => {
+    if (!loaded) return;
+    map.setFilter(OBJECT_LAYER, ['in', ['get', 'categoryId'], ['literal', visibleCategories]]);
+    const color: ExpressionSpecification = categories.length
+      ? ['match', ['get', 'categoryId'], ...categories.flatMap((category) => [category.id, category.color]), '#a4b5c5'] as unknown as ExpressionSpecification
+      : ['literal', '#a4b5c5'];
+    map.setPaintProperty(OBJECT_LAYER, 'circle-color', color);
+  };
 
   const selectionFilter = (): FilterSpecification => ['in', ['get', 'id'], ['literal', [...selectedIds]]];
   const applySelection = () => {
@@ -77,7 +91,7 @@ export function createMap(
 
   map.on('style.load', () => {
     map.addSource(SOURCES.districts, { type: 'geojson', data: districtData });
-    map.addSource(SOURCES['demo-object'], { type: 'geojson', data: { type: 'FeatureCollection', features: objects } });
+    map.addSource(SOURCES['demo-object'], { type: 'geojson', data: toGeoJSON(currentObjects) });
     const definitions: AddLayerObject[] = [
       { id: DISTRICT_FILL, type: 'fill', source: SOURCES.districts, paint: { 'fill-color': '#17343c', 'fill-opacity': 0.14 } },
       { id: DISTRICT_OUTLINE, type: 'line', source: SOURCES.districts, paint: { 'line-color': '#76a9ad', 'line-width': 1.2, 'line-opacity': 0.7 } },
@@ -88,17 +102,21 @@ export function createMap(
     loaded = true;
     applyLayers();
     applySelection();
+    applyCategories();
     callbacks.onReady();
   });
   map.on('click', (event) => {
+    if (!loaded) return;
     const features = map.queryRenderedFeatures(event.point, { layers: [OBJECT_LAYER, DISTRICT_FILL] });
     const object = features.find((feature) => feature.layer.id === OBJECT_LAYER);
-    if (typeof object?.id === 'string') { callbacks.onObjectClick(object.id); return; }
+    const objectId = object?.properties.id ?? object?.id;
+    if (typeof objectId === 'string') { callbacks.onObjectClick(objectId); return; }
     const district = features.find((feature) => feature.layer.id === DISTRICT_FILL);
     const id = district?.properties.id;
     if (typeof id === 'string' && id.startsWith('district-osm-relation-')) callbacks.onDistrictClick(id as DistrictId);
   });
   map.on('mousemove', (event) => {
+    if (!loaded) return;
     map.getCanvas().style.cursor = map.queryRenderedFeatures(event.point, { layers: [OBJECT_LAYER, DISTRICT_FILL] }).length ? 'pointer' : '';
   });
   map.on('error', () => { if (!loaded) callbacks.onError(); });
@@ -107,5 +125,12 @@ export function createMap(
     resize: () => map.resize(), remove: () => map.remove(),
     setSelectedDistricts: (ids: readonly DistrictId[]) => { selectedIds = ids; applySelection(); },
     setLayers: (layers: LayerRegistry) => { registry = layers; applyLayers(); },
+    setObjects: (data: MapObject[]) => {
+      currentObjects = data;
+      if (loaded) (map.getSource(SOURCES['demo-object']) as GeoJSONSource).setData(toGeoJSON(data));
+    },
+    setCategories: (definitions: Category[], ids: string[]) => {
+      categories = definitions; visibleCategories = ids; applyCategories();
+    },
   };
 }

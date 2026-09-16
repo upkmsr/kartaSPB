@@ -32,6 +32,26 @@ npm run dev
 
 ## Миграции
 
+Текущий head: `0002_objects`, поверх `0001_postgis`. Создаёт categories и
+project_objects, geometry(Geometry,4326), GiST spatial index и category index.
+Downgrade до 0001 удаляет новые таблицы вместе с их данными; применять только
+к одноразовой тестовой БД или после backup. Обычный запуск выполняет только upgrade.
+
+Development fixture: `docker compose exec backend python -m app.seed_demo`.
+Повторный запуск не изменяет существующий объект. Production-схема не содержит
+автоматического seed тестовых объектов.
+
+API smoke (через frontend proxy):
+
+```bash
+curl --fail http://localhost:5173/api/categories
+curl --fail http://localhost:5173/api/objects
+curl --fail 'http://localhost:5173/api/objects?category=demo,other'
+curl --fail http://localhost:5173/api/objects/demo-object-1
+```
+
+Последняя команда требует выполненного development seed. Unknown ID → 404.
+
 `0001_postgis` выполняет `CREATE EXTENSION IF NOT EXISTS postgis`.
 Образ PostGIS может уже содержать расширение. Повторный upgrade безопасен.
 Downgrade убирает запись Alembic, но намеренно сохраняет расширение: оно могло
@@ -93,7 +113,8 @@ PostgreSQL License (PostgreSQL), GPL-2.0-or-later (PostGIS).
 
 1. Открыть `http://localhost:5173/` на 1280×800 и 390×844 с WebGL и интернетом.
 2. Дождаться улиц/воды Петербурга, мятной точки и attribution источников.
-3. Нажать точку: видны название, `demo`, описание, `demo-object-1`.
+3. Выполнить development seed, обновить страницу, нажать точку: видны название,
+   «Демонстрационные», описание, `demo-object-1`.
 4. Закрыть карточку кнопкой ×; повторить выбор. Начальный viewport сохраняется.
 5. На mobile проверить touch, отсутствие горизонтального overflow, доступность
    controls и attribution, прокрутку содержимого карточки при необходимости.

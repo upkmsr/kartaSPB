@@ -1,5 +1,31 @@
 # Архитектура
 
+## SPRINT 3 — текущая object pipeline
+
+`project_objects` (PostGIS) → `app/objects.py` repository/read-only API →
+`data/objectsApi.ts` → canonical `MapObject[]` → `toGeoJSON()` → MapLibre source.
+Domain object содержит id, name, categoryId, description, geometry, properties,
+optional source/sourceId. Геометрия не зависит от MapLibre; БД поддерживает Point,
+LineString, Polygon и Multi-эквиваленты в EPSG:4326. Текущий object renderer — circles
+для Point; рендер линий/полигонов добавляется вместе с использующими их модулями.
+
+Категории хранятся в `categories` с FK из объектов: стабильный id, display name,
+description, color и defaultVisible. Единственный registry — ответ categories API;
+карточка получает display name через getCategoryById. React хранит объекты,
+selectedObject и visibleCategoryIds. Пустой visibleCategoryIds скрывает все объекты;
+«Показать все» восстанавливает все категории. Checkbox не вызывает запрос API.
+Backend отдельно поддерживает `?category=demo,other`; неизвестный/пустой набор
+возвращает пустой список. DTO — JSON array, geometry — GeoJSON-compatible.
+
+Существующий Layer Registry сохранён: ключ `demo-object` теперь управляет всеми
+объектами проекта (display name «Объекты проекта»). Районы остаются отдельной
+сущностью и source. Ошибка object API не меняет состояние районов и basemap.
+
+Production worker MapLibre включается через Vite `?worker&url` и `setWorkerUrl`,
+согласно [официальной инструкции](https://maplibre.org/maplibre-gl-js/docs/).
+Это исправляет обнаруженную при реальном QA незагружавшуюся worker-программу.
+OpenFreeMap остаётся тем же provider; TileJSON `/planet` задаёт актуальный tile URL.
+
 ## SPRINT 0
 
 - `frontend/`: React + TypeScript + Vite; UI shell и отдельный API client.

@@ -3,10 +3,11 @@ import type { MapObject } from '../domain/mapObject';
 
 interface ObjectCardProps {
   object: MapObject;
+  categoryName?: string;
   onClose: () => void;
 }
 
-export function ObjectCard({ object, onClose }: ObjectCardProps) {
+export function ObjectCard({ object, categoryName = 'Нет данных', onClose }: ObjectCardProps) {
   const closeButton = useRef<HTMLButtonElement>(null);
   useEffect(() => { closeButton.current?.focus({ preventScroll: true }); }, [object.id]);
 
@@ -14,14 +15,14 @@ export function ObjectCard({ object, onClose }: ObjectCardProps) {
     if (event.key === 'Escape') onClose();
   }}>
     <div className="card-heading">
-      <p className="eyebrow">ДЕМОНСТРАЦИОННАЯ ТОЧКА</p>
+      <p className="eyebrow">{object.properties.demo ? 'ДЕМОНСТРАЦИОННЫЙ ОБЪЕКТ' : 'ОБЪЕКТ ПРОЕКТА'}</p>
       <button ref={closeButton} className="close-card" onClick={onClose} aria-label="Закрыть карточку">×</button>
     </div>
-    <h2 id="object-title">{object.properties.name}</h2>
+    <h2 id="object-title">{object.name}</h2>
     <dl>
-      <div><dt>Категория</dt><dd>{object.properties.category}</dd></div>
+      <div><dt>Категория</dt><dd>{categoryName}</dd></div>
       <div><dt>ID</dt><dd>{object.id}</dd></div>
     </dl>
-    <p className="card-description">{object.properties.description}</p>
+    <p className="card-description">{object.description || 'Нет данных'}</p>
   </aside>;
 }

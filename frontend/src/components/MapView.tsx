@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { mapConfig } from '../config/map';
-import { demoObjects } from '../data/demo';
+import type { Category, MapObject } from '../domain/mapObject';
 import { districtFeatureCollection } from '../data/districts';
 import type { DistrictId } from '../domain/district';
 import type { LayerRegistry } from '../domain/layers';
@@ -12,21 +12,28 @@ interface MapViewProps {
   onDistrictClick: (id: DistrictId) => void;
   selectedDistrictIds: readonly DistrictId[];
   layers: LayerRegistry;
+  objects?: MapObject[];
+  categories?: Category[];
+  visibleCategoryIds?: string[];
 }
 
-export function MapView({ onObjectClick, onDistrictClick, selectedDistrictIds, layers }: MapViewProps) {
+export function MapView({ onObjectClick, onDistrictClick, selectedDistrictIds, layers, objects = [], categories = [], visibleCategoryIds = [] }: MapViewProps) {
   const container = useRef<HTMLDivElement>(null);
   const onClick = useRef(onObjectClick);
   const onDistrict = useRef(onDistrictClick);
   const adapter = useRef<ReturnType<typeof createMap> | undefined>(undefined);
   const initialSelection = useRef(selectedDistrictIds);
   const initialLayers = useRef(layers);
+  const initialObjects = useRef(objects);
+  const initialCategories = useRef({ categories, visibleCategoryIds });
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 
   useEffect(() => { onClick.current = onObjectClick; }, [onObjectClick]);
   useEffect(() => { onDistrict.current = onDistrictClick; }, [onDistrictClick]);
   useEffect(() => { adapter.current?.setSelectedDistricts(selectedDistrictIds); }, [selectedDistrictIds]);
   useEffect(() => { adapter.current?.setLayers(layers); }, [layers]);
+  useEffect(() => { adapter.current?.setObjects(objects); }, [objects]);
+  useEffect(() => { adapter.current?.setCategories(categories, visibleCategoryIds); }, [categories, visibleCategoryIds]);
   useEffect(() => {
     if (!container.current) return;
     let mapAdapter: ReturnType<typeof createMap> | undefined;
@@ -34,7 +41,7 @@ export function MapView({ onObjectClick, onDistrictClick, selectedDistrictIds, l
     let active = true;
     const timeout = window.setTimeout(() => setStatus('error'), 20000);
     try {
-      mapAdapter = createMap(container.current, mapConfig, demoObjects, districtFeatureCollection, {
+      mapAdapter = createMap(container.current, mapConfig, initialObjects.current, districtFeatureCollection, {
         onObjectClick: (id) => { if (active) onClick.current(id); },
         onDistrictClick: (id) => { if (active) onDistrict.current(id); },
         onReady: () => {
@@ -49,6 +56,7 @@ export function MapView({ onObjectClick, onDistrictClick, selectedDistrictIds, l
       adapter.current = mapAdapter;
       mapAdapter.setSelectedDistricts(initialSelection.current);
       mapAdapter.setLayers(initialLayers.current);
+      mapAdapter.setCategories(initialCategories.current.categories, initialCategories.current.visibleCategoryIds);
       observer = new ResizeObserver(() => mapAdapter?.resize());
       observer.observe(container.current);
     } catch {

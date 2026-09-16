@@ -5,6 +5,17 @@ Master Specification: [KARTASPB_AI_AGENT_SPEC.md](KARTASPB_AI_AGENT_SPEC.md).
 
 ## Текущий этап
 
+SPRINT 3 — canonical project objects, категории и локальные category filters.
+Объекты загружаются из PostgreSQL/PostGIS через read-only API.
+На чистой БД список объектов пуст; для демонстрации после запуска выполните:
+
+```bash
+docker compose exec backend python -m app.seed_demo
+```
+
+Команда добавляет исходный `demo-object-1` идемпотентно. Перезагрузите страницу.
+Категории «Демонстрационные» и «Прочее» создаются миграцией.
+
 SPRINT 0 — Repository & Architecture завершён и принят в Docker/PostGIS.
 SPRINT 1 — минимальная карта Санкт-Петербурга на MapLibre GL JS завершён.
 SPRINT 2 — 18 районов, multi-select, визуальное выделение и Layer Registry:
@@ -56,4 +67,4 @@ npm run build
 ```
 
 См. [разработка](docs/development.md), [архитектура](docs/architecture.md),
-[отчёт SPRINT 2](docs/sprint-2.md), [изменения](CHANGELOG.md).
+[отчёт SPRINT 3](docs/sprint-3.md), [изменения](CHANGELOG.md).

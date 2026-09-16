@@ -12,7 +12,7 @@ export type LayerRegistry = Record<ProjectLayerId, LayerDefinition>;
 
 export const initialLayerRegistry: LayerRegistry = {
   districts: { id: 'districts', name: 'Районы', visible: true, opacity: 0.7, order: 10 },
-  'demo-object': { id: 'demo-object', name: 'Тестовый объект', visible: true, opacity: 1, order: 20 },
+  'demo-object': { id: 'demo-object', name: 'Объекты проекта', visible: true, opacity: 1, order: 20 },
 };
 
 export function updateLayer(

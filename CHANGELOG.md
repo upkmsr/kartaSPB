@@ -1,5 +1,13 @@
 # Changelog
 
+## SPRINT 3
+
+- Canonical objects in PostGIS, category persistence, read-only API and category queries.
+- Frontend API repository, category filters, canonical object card and empty/error states.
+- Explicit idempotent development seed preserving demo-object-1.
+- Fixed missing MapLibre production worker and preserved string IDs through properties.
+- Restored provider TileJSON discovery; MapLibre/OpenFreeMap stack unchanged.
+
 ## SPRINT 2
 
 - Added all 18 Saint Petersburg district geometries from an OSM-derived local snapshot.

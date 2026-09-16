@@ -1,5 +1,9 @@
 # Модули
 
+SPRINT 3 добавляет canonical object persistence/API и категории в CORE.
+Предметные модули и search/geocoding отсутствуют; поиск отложен до SPRINT 4
+по отдельному указанию владельца. Районы не включаются в POI model.
+
 SPRINT 0–2 реализуют инфраструктурный CORE: health/migrations, MapLibre shell,
 application state районов и минимальный Layer Registry. Районы пока являются
 core geographic selector на локальном development dataset, а не отдельным

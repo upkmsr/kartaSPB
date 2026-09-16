@@ -8,8 +8,8 @@
 - Style: same-origin `/basemap/openfreemap-dark.json`, MapLibre Style Specification
   v8, with a replaceable OpenFreeMap vector source. The local style avoids making
   project-layer initialization depend on remote sprites, glyphs or style JSON.
-- Vector tiles: replaceable template `https://tiles.openfreemap.org/planet/{z}/{x}/{y}.pbf`
-  в локальном style JSON.
+- Vector TileJSON: `https://tiles.openfreemap.org/planet` в локальном style JSON.
+  Актуальный versioned tile template берётся из ответа provider.
 - Данные: OpenStreetMap, схема OpenMapTiles; на малых zoom также Natural Earth.
 - Attribution: OpenFreeMap · © OpenMapTiles · Data from OpenStreetMap.
   MapLibre AttributionControl показывает её полностью, включая на mobile;
@@ -42,7 +42,11 @@ production-зависимость. Первичная загрузка и pan/zo
 `frontend/src/data/demo/point.json` — один искусственный Point, `demo-object-1`.
 Координаты `[30.3158, 59.9391]` заданы владельцем в примере для этого спринта.
 Название и описание явно демонстрационные; точка не представляет городской объект.
-Fixture не импортируется в PostGIS и не является production geographic knowledge.
+Начиная с SPRINT 3 fixture добавляется в PostGIS явной командой
+`docker compose exec backend python -m app.seed_demo`. Источник —
+`development-fixture`, properties.demo=true; runtime использует только API.
+Frontend fixture сохранён для regression tests, а не как fallback при сбое API.
+Это не production geographic knowledge.
 
 ## MapLibre dependency
 

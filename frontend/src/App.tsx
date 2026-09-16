@@ -3,21 +3,42 @@ import { fetchHealth } from './health';
 import { MapView } from './components/MapView';
 import { ObjectCard } from './components/ObjectCard';
 import { DistrictPanel } from './components/DistrictPanel';
-import { demoObjects } from './data/demo';
+import { objectsApi, getCategoryById } from './data/objectsApi';
+import { CategoryPanel } from './components/CategoryPanel';
 import { districts } from './data/districts';
 import type { DistrictId } from './domain/district';
 import { toggleDistrict } from './domain/district';
 import { initialLayerRegistry, updateLayer } from './domain/layers';
 import type { ProjectLayerId } from './domain/layers';
-import type { SelectedObject } from './domain/mapObject';
+import type { SelectedObject, MapObject, Category } from './domain/mapObject';
 
 export function App() {
   const [selectedObject, setSelectedObject] = useState<SelectedObject>(null);
   const [selectedDistrictIds, setSelectedDistrictIds] = useState<DistrictId[]>([]);
   const [layers, setLayers] = useState(initialLayerRegistry);
+  const [objects, setObjects] = useState<MapObject[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [visibleCategoryIds, setVisibleCategoryIds] = useState<string[]>([]);
+  const [dataStatus, setDataStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [dataAttempt, setDataAttempt] = useState(0);
+  useEffect(() => {
+    const controller = new AbortController();
+    let active = true;
+    const timeout = window.setTimeout(() => controller.abort(), 10000);
+    Promise.all([objectsApi.getObjects(controller.signal), objectsApi.getCategories(controller.signal)])
+      .then(([items, definitions]) => {
+        if (!active) return;
+        setObjects(items); setCategories(definitions);
+        setVisibleCategoryIds(definitions.filter((category) => category.defaultVisible).map((category) => category.id));
+        setDataStatus('ready');
+      }).catch(() => {
+        if (active) { console.warn('Project data load failed'); setDataStatus('error'); }
+      }).finally(() => window.clearTimeout(timeout));
+    return () => { active = false; controller.abort(); window.clearTimeout(timeout); };
+  }, [dataAttempt]);
   const selectObject = useCallback((id: string) => {
-    setSelectedObject(demoObjects.find((object) => object.id === id) ?? null);
-  }, []);
+    setSelectedObject(objects.find((object) => object.id === id) ?? null);
+  }, [objects]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
@@ -42,6 +63,9 @@ export function App() {
     </header>
     <section className="map-workspace" aria-label="Обзор территории">
       <MapView
+        objects={objects}
+        categories={categories}
+        visibleCategoryIds={visibleCategoryIds}
         selectedDistrictIds={selectedDistrictIds}
         layers={layers}
         onDistrictClick={(id) => setSelectedDistrictIds((current) => toggleDistrict(current, id))}
@@ -51,7 +75,15 @@ export function App() {
         <p className="eyebrow">ИССЛЕДОВАНИЕ ТЕРРИТОРИИ</p>
         <h1>Санкт-Петербург</h1>
         <p>Выберите районы в панели или на карте.<br />Мятная точка открывает карточку.</p>
-        <span className="demo-badge">DEMO · 1 тестовый объект</span>
+        <span className="demo-badge">Объектов загружено: {objects.length}</span>
+        {dataStatus === 'loading' && <p role="status">Загружаем объекты…</p>}
+        {dataStatus === 'error' && <div role="alert">Не удалось загрузить объекты.
+          <button onClick={() => { setDataStatus('loading'); setDataAttempt((value) => value + 1); }}>Повторить загрузку объектов</button>
+        </div>}
+        {dataStatus === 'ready' && <>
+          <CategoryPanel categories={categories} visibleIds={visibleCategoryIds} onChange={(ids) => { setVisibleCategoryIds(ids); setSelectedObject(null); }} />
+          {!objects.some((object) => visibleCategoryIds.includes(object.categoryId)) && <p role="status">Нет объектов для выбранных категорий.</p>}
+        </>}
       </div>
       <DistrictPanel
         districts={districts}
@@ -62,7 +94,7 @@ export function App() {
         onLayerVisibilityChange={(id: ProjectLayerId, visible) => setLayers((current) => updateLayer(current, id, { visible }))}
         onLayerOpacityChange={(id: ProjectLayerId, opacity) => setLayers((current) => updateLayer(current, id, { opacity }))}
       />
-      {selectedObject && <ObjectCard object={selectedObject} onClose={() => setSelectedObject(null)} />}
+      {selectedObject && <ObjectCard object={selectedObject} categoryName={getCategoryById(categories, selectedObject.categoryId)?.name} onClose={() => setSelectedObject(null)} />}
     </section>
     <footer className="app-footer"><span>ПЕРСОНАЛЬНАЯ GIS-СИСТЕМА</span><span>Тестовая точка · не реальные данные</span></footer>
   </main>;

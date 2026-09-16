@@ -4,7 +4,7 @@
   "sources": {
     "openfreemap": {
       "type": "vector",
-      "tiles": ["https://tiles.openfreemap.org/planet/{z}/{x}/{y}.pbf"],
+      "url": "https://tiles.openfreemap.org/planet",
       "minzoom": 0,
       "maxzoom": 14,
       "attribution": "OpenFreeMap © OpenMapTiles · Data from OpenStreetMap"
