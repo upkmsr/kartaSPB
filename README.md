@@ -5,6 +5,20 @@ Master Specification: [KARTASPB_AI_AGENT_SPEC.md](KARTASPB_AI_AGENT_SPEC.md).
 
 ## Текущий этап
 
+SPRINT 5–9 — общий ingestion pipeline и реальные, ограниченные снимки OSM:
+базовые районы, природа/вода, метро и наземный транспорт. Импорт выполняется
+явными командами после запуска Compose; на чистой БД предметные таблицы пусты:
+
+```bash
+docker compose exec backend python -m app.open_data
+docker compose exec backend python -m app.nature
+docker compose exec backend python -m app.metro
+docker compose exec backend python -m app.transport
+```
+
+Повторный import обновляет объекты без дублей. Источники, лицензии, охват и
+ограничения: [docs/data-sources.md](docs/data-sources.md).
+
 SPRINT 4 — раздельный поиск объектов KARTASPB и адресов/мест. Введите не менее
 двух символов; результаты проекта открывают canonical Object Card, географические
 результаты перемещают карту и показывают временный маркер.
@@ -50,6 +64,9 @@ docker compose up --build --wait
 - Readiness (PostGIS и миграция): http://localhost:8000/api/health/ready
 - Project Search: `GET /api/search/objects?q=Тестовый`
 - Geographic Search: `GET /api/search/geocode?q=Дворцовая площадь`
+- Import runs: `GET /api/import/runs`
+- Nearest metro: `GET /api/analysis/metro/nearest?lon=30.3158&lat=59.9391`
+- Nearby transport: `GET /api/analysis/transport/nearby?lon=30.3158&lat=59.9391`
 
 Compose ждёт БД, выполняет `alembic upgrade head`, затем запускает API и frontend.
 БД хранится в named volume, порт БД наружу не публикуется.

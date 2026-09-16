@@ -4,9 +4,7 @@ from typing import Any
 from app.ingestion.models import ImportRecord
 
 EXPECTED_BOUNDS = (27.0, 58.0, 32.5, 61.5)
-GEOMETRY_TYPES = {
-    "Point", "LineString", "Polygon", "MultiPoint", "MultiLineString", "MultiPolygon"
-}
+GEOMETRY_TYPES = {"Point", "LineString", "Polygon", "MultiPoint", "MultiLineString", "MultiPolygon"}
 
 
 @dataclass(frozen=True)

@@ -24,9 +24,9 @@ def unavailable() -> HTTPException:
 @router.get("/status")
 def status() -> dict[str, Any]:
     try:
-        running = _query(
-            "SELECT count(*) AS count FROM ingestion_runs WHERE status='running'"
-        )[0]["count"]
+        running = _query("SELECT count(*) AS count FROM ingestion_runs WHERE status='running'")[0][
+            "count"
+        ]
         latest = _query(
             "SELECT id,status,module,source_id,started_at,finished_at "
             "FROM ingestion_runs ORDER BY id DESC LIMIT 1"

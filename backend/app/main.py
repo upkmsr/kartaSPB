@@ -10,6 +10,7 @@ from app.imports import router as import_router
 from app.metro.api import router as metro_router
 from app.objects import router
 from app.search import router as search_router
+from app.transport.api import router as transport_router
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +26,7 @@ app.include_router(router)
 app.include_router(search_router)
 app.include_router(import_router)
 app.include_router(metro_router)
+app.include_router(transport_router)
 
 
 @app.get("/api/health/live")

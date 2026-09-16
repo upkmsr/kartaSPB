@@ -3,7 +3,8 @@
 ## Окружение
 
 Целевое окружение: Docker Compose v2, Python 3.12, Node.js 24.
-Backend также проверен на имеющемся Python 3.9.6; для новой установки используйте 3.12.
+Локальный backend требует Python 3.10+ (аннотации типов `|`); рекомендуемая
+версия — 3.12, как в Docker-образе. Системный Python 3.9 не подходит.
 
 ```bash
 cd backend
@@ -32,14 +33,30 @@ npm run dev
 
 ## Миграции
 
-Текущий head: `0002_objects`, поверх `0001_postgis`. Создаёт categories и
-project_objects, geometry(Geometry,4326), GiST spatial index и category index.
+Текущий head: `0007_transport`, поверх `0001_postgis` → `0002_objects` →
+`0003_ingestion` → `0004_open_data` → `0005_nature` → `0006_metro`.
+Создаёт categories, project_objects, ingestion tables и предметные категории;
+geometry(Geometry,4326) имеет GiST spatial index.
 Downgrade до 0001 удаляет новые таблицы вместе с их данными; применять только
 к одноразовой тестовой БД или после backup. Обычный запуск выполняет только upgrade.
 
 Development fixture: `docker compose exec backend python -m app.seed_demo`.
 Повторный запуск не изменяет существующий объект. Production-схема не содержит
 автоматического seed тестовых объектов.
+
+Импорт предметных snapshots запускается отдельно и повторяемо:
+
+```bash
+docker compose exec backend python -m app.open_data
+docker compose exec backend python -m app.nature
+docker compose exec backend python -m app.metro
+docker compose exec backend python -m app.transport
+```
+
+`python -m app.open_data --refresh` выполняет новый ограниченный Overpass-запрос;
+остальные команды используют зафиксированные raw snapshots для воспроизводимости.
+`/api/import/status`, `/api/import/runs`, `/api/import/errors` показывают ход и
+результаты. Source registry и provenance хранятся в PostGIS.
 
 API smoke (через frontend proxy):
 

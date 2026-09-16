@@ -1,5 +1,21 @@
 # Источники данных
 
+## SPRINT 9 — Surface transport sample
+
+- Source: OpenStreetMap through Overpass; ODbL 1.0,
+  © OpenStreetMap contributors.
+- Collection: 2026-09-16. A metadata query over central Petersburg selected the
+  lowest stable relation IDs for three bus, three tram and three trolleybus route
+  relations. The checked-in bounded snapshot contains those route geometries and
+  their tagged member stops: `backend/app/transport/snapshots/spb_transport.json`.
+- Dataset: 9 directed route entities and 441 distinct stop entities. Stable IDs
+  are `osm-transport-relation-<id>` and `osm-transport-node-<id>`. Direction,
+  route type/ref and stop-to-route membership come from OSM tags/members.
+- Known limitation: this is a deterministic, representative sample, not the full
+  Petersburg network or schedule. OSM membership may be incomplete. Nearby
+  analysis uses straight-line PostGIS geography distance; it is not travel time.
+  A larger refresh should run as regional extract processing and viewport APIs.
+
 ## SPRINT 8 — Saint Petersburg metro
 
 - Source: OpenStreetMap through bounded Overpass query; ODbL 1.0,

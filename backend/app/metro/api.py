@@ -17,13 +17,20 @@ def nearest(
 ) -> dict[str, Any]:
     try:
         with get_engine().connect() as connection:
-            row = connection.execute(text("""
+            row = (
+                connection.execute(
+                    text("""
                 SELECT id,name,properties->'lineRefs' AS lines,
                   ST_Distance(geometry::geography,ST_SetSRID(ST_Point(:lon,:lat),4326)::geography)
                     AS distance_meters
                 FROM project_objects WHERE category_id='metro-station'
                 ORDER BY geometry <-> ST_SetSRID(ST_Point(:lon,:lat),4326) LIMIT 1
-            """), {"lon": lon, "lat": lat}).mappings().first()
+            """),
+                    {"lon": lon, "lat": lat},
+                )
+                .mappings()
+                .first()
+            )
     except SQLAlchemyError:
         logger.warning("Metro analysis unavailable")
         raise HTTPException(

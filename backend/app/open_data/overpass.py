@@ -19,7 +19,7 @@ SOURCE = SourceDefinition(
     notes="Bounded snapshots only; not a tile endpoint. Public instance has no SLA.",
 )
 DEFAULT_QUERY = (
-    '[out:json][timeout:45];area(3600337422)->.searchArea;'
+    "[out:json][timeout:45];area(3600337422)->.searchArea;"
     'relation["boundary"="administrative"]["admin_level"="5"](area.searchArea);'
     "out tags center;"
 )
@@ -49,15 +49,23 @@ def records(payload: dict[str, Any]) -> Iterable[tuple[str, dict[str, Any], Impo
             continue
         record_id = f"{element['type']}-{element['id']}"
         properties = {
-            "osmType": element["type"], "osmId": element["id"],
-            "adminLevel": tags.get("admin_level"), "boundary": tags.get("boundary"),
+            "osmType": element["type"],
+            "osmId": element["id"],
+            "adminLevel": tags.get("admin_level"),
+            "boundary": tags.get("boundary"),
             "snapshotTimestamp": payload.get("osm3s", {}).get("timestamp_osm_base"),
         }
-        yield record_id, element, ImportRecord(
-            source_id=SOURCE.id, name=name, category_id="osm-base",
-            geometry={"type": "Point", "coordinates": [center["lon"], center["lat"]]},
-            description="Центр административного района по данным OpenStreetMap",
-            properties=properties,
+        yield (
+            record_id,
+            element,
+            ImportRecord(
+                source_id=SOURCE.id,
+                name=name,
+                category_id="osm-base",
+                geometry={"type": "Point", "coordinates": [center["lon"], center["lat"]]},
+                description="Центр административного района по данным OpenStreetMap",
+                properties=properties,
+            ),
         )
 
 

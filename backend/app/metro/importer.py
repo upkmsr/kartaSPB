@@ -8,15 +8,17 @@ from app.ingestion.models import ImportRecord, ImportStats, SourceDefinition
 from app.ingestion.pipeline import import_records
 
 SOURCE = SourceDefinition(
-    id="osm-metro", name="OpenStreetMap Saint Petersburg metro", type="osm-overpass-snapshot",
-    url="https://overpass-api.de/api/interpreter", license="ODbL 1.0",
-    attribution="© OpenStreetMap contributors", priority=50,
+    id="osm-metro",
+    name="OpenStreetMap Saint Petersburg metro",
+    type="osm-overpass-snapshot",
+    url="https://overpass-api.de/api/interpreter",
+    license="ODbL 1.0",
+    attribution="© OpenStreetMap contributors",
+    priority=50,
     notes="Subway route relations, station nodes and entrance nodes in Petersburg area.",
 )
 SNAPSHOT = Path(__file__).parent / "snapshots" / "spb_metro.json"
-LINE_BY_COLOR = {
-    "red": "1", "blue": "2", "green": "3", "orange": "4", "purple": "5", "brown": "6"
-}
+LINE_BY_COLOR = {"red": "1", "blue": "2", "green": "3", "orange": "4", "purple": "5", "brown": "6"}
 
 
 def load_snapshot(path: Path = SNAPSHOT) -> dict[str, Any]:
@@ -48,21 +50,31 @@ def records(payload: dict[str, Any]) -> Iterable[tuple[str, dict[str, Any], Impo
                 continue
             segments = [
                 [[point["lon"], point["lat"]] for point in member["geometry"]]
-                for member in element.get("members", []) if len(member.get("geometry", [])) >= 2
+                for member in element.get("members", [])
+                if len(member.get("geometry", [])) >= 2
             ]
             if not segments:
                 continue
             seen_lines.add(line_ref)
-            yield f"relation-{element['id']}", element, ImportRecord(
-                source_id=SOURCE.id, name=tags.get("name", f"Линия {line_ref}"),
-                category_id="metro-line",
-                geometry={"type": "MultiLineString", "coordinates": segments},
-                description="Линия метро по данным OpenStreetMap",
-                properties={"lineRef": line_ref, "lineColor": tags.get("colour"),
-                            "osmId": element["id"]},
+            yield (
+                f"relation-{element['id']}",
+                element,
+                ImportRecord(
+                    source_id=SOURCE.id,
+                    name=tags.get("name", f"Линия {line_ref}"),
+                    category_id="metro-line",
+                    geometry={"type": "MultiLineString", "coordinates": segments},
+                    description="Линия метро по данным OpenStreetMap",
+                    properties={
+                        "lineRef": line_ref,
+                        "lineColor": tags.get("colour"),
+                        "osmId": element["id"],
+                    },
+                ),
             )
         elif element.get("type") == "node" and tags.get("railway") in {
-            "station", "subway_entrance"
+            "station",
+            "subway_entrance",
         }:
             is_station = tags["railway"] == "station"
             category = "metro-station" if is_station else "metro-entrance"
@@ -72,16 +84,22 @@ def records(payload: dict[str, Any]) -> Iterable[tuple[str, dict[str, Any], Impo
             line_refs = memberships.get(element["id"], set()).copy()
             if line := LINE_BY_COLOR.get(tags.get("colour")):
                 line_refs.add(line)
-            yield f"node-{element['id']}", element, ImportRecord(
-                source_id=SOURCE.id, name=name, category_id=category,
-                geometry={"type": "Point", "coordinates": [element["lon"], element["lat"]]},
-                description=("Станция метро" if is_station else "Вход или выход метро")
-                + " по данным OpenStreetMap",
-                properties={
-                    "lineRefs": sorted(line_refs),
-                    "osmId": element["id"],
-                    "interchange": len(line_refs) > 1,
-                },
+            yield (
+                f"node-{element['id']}",
+                element,
+                ImportRecord(
+                    source_id=SOURCE.id,
+                    name=name,
+                    category_id=category,
+                    geometry={"type": "Point", "coordinates": [element["lon"], element["lat"]]},
+                    description=("Станция метро" if is_station else "Вход или выход метро")
+                    + " по данным OpenStreetMap",
+                    properties={
+                        "lineRefs": sorted(line_refs),
+                        "osmId": element["id"],
+                        "interchange": len(line_refs) > 1,
+                    },
+                ),
             )
 
 

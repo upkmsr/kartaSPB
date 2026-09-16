@@ -7,9 +7,13 @@ from app.ingestion.models import ImportRecord, ImportStats, SourceDefinition
 from app.ingestion.pipeline import import_records
 
 SOURCE = SourceDefinition(
-    id="osm-nature", name="OpenStreetMap nature features", type="osm-overpass-snapshot",
-    url="https://overpass-api.de/api/interpreter", license="ODbL 1.0",
-    attribution="© OpenStreetMap contributors", priority=50,
+    id="osm-nature",
+    name="OpenStreetMap nature features",
+    type="osm-overpass-snapshot",
+    url="https://overpass-api.de/api/interpreter",
+    license="ODbL 1.0",
+    attribution="© OpenStreetMap contributors",
+    priority=50,
     notes="Named green/water ways in bounded Petersburg region snapshot.",
 )
 SNAPSHOT = Path(__file__).parent / "snapshots" / "spb_nature.json"
@@ -46,11 +50,17 @@ def records(payload: dict[str, Any]) -> Iterable[tuple[str, dict[str, Any], Impo
             "coordinates": [coordinates] if closed else coordinates,
         }
         record_id = f"{element['type']}-{element['id']}"
-        yield record_id, element, ImportRecord(
-            source_id=SOURCE.id, name=tags["name"], category_id=category,
-            geometry=geojson, description="Природный объект по данным OpenStreetMap",
-            properties={"natureType": kind, "osmType": element["type"],
-                        "osmId": element["id"]},
+        yield (
+            record_id,
+            element,
+            ImportRecord(
+                source_id=SOURCE.id,
+                name=tags["name"],
+                category_id=category,
+                geometry=geojson,
+                description="Природный объект по данным OpenStreetMap",
+                properties={"natureType": kind, "osmType": element["type"], "osmId": element["id"]},
+            ),
         )
 
 

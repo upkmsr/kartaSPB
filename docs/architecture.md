@@ -1,5 +1,15 @@
 # Архитектура
 
+## SPRINT 9 — Surface Transport
+
+`app.transport` keeps route MultiLineStrings and stop Points as different
+canonical entities. Route properties retain type, ref and direction; stop
+properties retain arrays of served route types/refs and unique route IDs. The Layer Registry exposes
+bus, tram, trolleybus and stops independently. MapLibre renders the GeoJSON source
+directly; React creates no per-route DOM nodes. The current 450-object bounded
+sample fits one API response. `/api/analysis/transport/nearby` uses indexed
+PostGIS distance to report nearby stop/route counts and up to ten nearest stops.
+
 ## SPRINT 8 — Metro
 
 The isolated `app.metro` module imports line MultiLineStrings and station/entrance

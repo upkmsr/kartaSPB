@@ -23,13 +23,19 @@ def test_nature_import_and_provenance():
     assert stats.found >= 1000
     assert stats.errors == 0
     with get_engine().connect() as connection:
-        counts = dict(connection.execute(text("""
+        counts = dict(
+            connection.execute(
+                text("""
             SELECT category_id,count(*) FROM project_objects
             WHERE source='osm-nature' GROUP BY category_id
-        """)).all())
+        """)
+            ).all()
+        )
         assert counts["nature-green"] > 0
         assert counts["nature-water"] > 0
-        assert connection.execute(text("""
+        assert connection.execute(
+            text("""
             SELECT bool_and(ST_IsValid(geometry)) FROM project_objects
             WHERE source='osm-nature'
-        """)).scalar_one()
+        """)
+        ).scalar_one()

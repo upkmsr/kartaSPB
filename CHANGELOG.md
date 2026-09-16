@@ -1,5 +1,11 @@
 # Changelog
 
+## SPRINT 9
+
+- Added a real OSM sample of bus, tram and trolleybus routes with 441 distinct
+  stops, stable IDs, directions, provenance and repeatable import.
+- Added independent surface transport layers and nearby stop/route analysis.
+
 ## SPRINT 8
 
 - Added real OSM metro lines, stations and entrances with stable IDs, provenance,

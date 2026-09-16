@@ -28,13 +28,21 @@ def test_open_data_import_is_repeatable_with_provenance():
     assert second.updated == second.duplicates == 18
     assert second.errors == 0
     with get_engine().connect() as connection:
-        assert connection.execute(text(
-            "SELECT count(*) FROM project_objects WHERE source='osm-overpass'"
-        )).scalar_one() == 18
-        assert connection.execute(text(
-            "SELECT bool_and(ST_IsValid(geometry)) FROM project_objects "
-            "WHERE source='osm-overpass'"
-        )).scalar_one()
-        assert connection.execute(text(
-            "SELECT count(*) FROM object_provenance WHERE source_id='osm-overpass'"
-        )).scalar_one() == 18
+        assert (
+            connection.execute(
+                text("SELECT count(*) FROM project_objects WHERE source='osm-overpass'")
+            ).scalar_one()
+            == 18
+        )
+        assert connection.execute(
+            text(
+                "SELECT bool_and(ST_IsValid(geometry)) FROM project_objects "
+                "WHERE source='osm-overpass'"
+            )
+        ).scalar_one()
+        assert (
+            connection.execute(
+                text("SELECT count(*) FROM object_provenance WHERE source_id='osm-overpass'")
+            ).scalar_one()
+            == 18
+        )

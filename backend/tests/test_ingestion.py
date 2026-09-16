@@ -20,9 +20,12 @@ from app.main import app
 
 def record(**overrides: object) -> ImportRecord:
     values: dict[str, object] = {
-        "source_id": "fixture", "name": "  Летний   сад ", "category_id": "demo",
+        "source_id": "fixture",
+        "name": "  Летний   сад ",
+        "category_id": "demo",
         "geometry": {"type": "Point", "coordinates": [30.335, 59.945]},
-        "address": " Санкт-Петербург ", "aliases": ("Summer Garden",),
+        "address": " Санкт-Петербург ",
+        "aliases": ("Summer Garden",),
     }
     values.update(overrides)
     return ImportRecord(**values)  # type: ignore[arg-type]
@@ -47,27 +50,42 @@ def test_normalization_validation_and_match_key():
 @pytest.mark.skipif(os.getenv("RUN_DB_TESTS") != "1", reason="Requires migrated PostGIS")
 def test_idempotent_import_staging_provenance_and_api():
     source = SourceDefinition(
-        id="integration-fixture", name="Integration fixture", type="fixture",
-        url="local://test_ingestion", license="project fixture", attribution="KARTASPB",
+        id="integration-fixture",
+        name="Integration fixture",
+        type="fixture",
+        url="local://test_ingestion",
+        license="project fixture",
+        attribution="KARTASPB",
     )
-    items = [(
-        "same-1", {"raw": "value"}, record(source_id=source.id, category_id="other")
-    )]
+    items = [("same-1", {"raw": "value"}, record(source_id=source.id, category_id="other"))]
     first_run, first = import_records(source, "integration", items)
     second_run, second = import_records(source, "integration", items)
     assert first.inserted + first.updated == 1
     assert second.inserted == 0
     assert second.updated == second.duplicates == 1
     with get_engine().connect() as connection:
-        assert connection.execute(text(
-            "SELECT count(*) FROM project_objects WHERE id='integration-fixture-same-1'"
-        )).scalar_one() == 1
-        assert connection.execute(text(
-            "SELECT count(*) FROM ingestion_staging WHERE run_id IN (:first,:second)"
-        ), {"first": first_run, "second": second_run}).scalar_one() == 2
-        assert connection.execute(text(
-            "SELECT count(*) FROM object_provenance WHERE object_id='integration-fixture-same-1'"
-        )).scalar_one() == 1
+        assert (
+            connection.execute(
+                text("SELECT count(*) FROM project_objects WHERE id='integration-fixture-same-1'")
+            ).scalar_one()
+            == 1
+        )
+        assert (
+            connection.execute(
+                text("SELECT count(*) FROM ingestion_staging WHERE run_id IN (:first,:second)"),
+                {"first": first_run, "second": second_run},
+            ).scalar_one()
+            == 2
+        )
+        assert (
+            connection.execute(
+                text(
+                    "SELECT count(*) FROM object_provenance "
+                    "WHERE object_id='integration-fixture-same-1'"
+                )
+            ).scalar_one()
+            == 1
+        )
     with TestClient(app) as client:
         assert client.get("/api/import/status").status_code == 200
         assert client.get("/api/import/runs").status_code == 200

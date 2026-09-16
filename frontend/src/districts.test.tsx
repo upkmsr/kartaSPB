@@ -38,7 +38,7 @@ it('renders labeled district controls that select and clear districts', () => {
     onLayerVisibilityChange={vi.fn()}
     onLayerOpacityChange={vi.fn()}
   />);
-  expect(screen.getAllByRole('checkbox')).toHaveLength(25);
+  expect(screen.getAllByRole('checkbox')).toHaveLength(29);
   const district = screen.getByRole('checkbox', { name: districts[1].properties.name });
   fireEvent.click(district);
   expect(onToggle).toHaveBeenCalledWith(districts[1].id);
@@ -56,5 +56,6 @@ it('updates registry visibility and bounded opacity with stable ordered IDs', ()
   expect(orderedLayers(initialLayerRegistry).map((layer) => layer.id)).toEqual([
     'districts', 'demo-object', 'nature-green', 'nature-water',
     'metro-lines', 'metro-stations', 'metro-entrances',
+    'transport-bus', 'transport-tram', 'transport-trolleybus', 'transport-stops',
   ]);
 });

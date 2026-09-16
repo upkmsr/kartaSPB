@@ -1,5 +1,9 @@
 # Модули
 
+SPRINT 9 adds `transport`: an OSM importer for separate route/stop entities,
+independent bus/tram/trolleybus/stops layers, and nearby transport analysis.
+Schedules and routing remain outside this module.
+
 SPRINT 8 adds `metro`: its importer, three canonical categories, three registered
 map layers and a nearest-station analysis endpoint. Route relations are lines;
 stations and entrances remain distinct point entities.
