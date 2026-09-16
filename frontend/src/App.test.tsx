@@ -73,7 +73,7 @@ it('mounts a map container and supplies one separate GeoJSON source with a stabl
     type: 'geojson', data: toGeoJSON(demoObjects),
   });
   expect(maps[0].addSource).toHaveBeenCalledWith('districts', expect.objectContaining({ type: 'geojson' }));
-  expect(maps[0].addLayer).toHaveBeenCalledTimes(18);
+  expect(maps[0].addLayer).toHaveBeenCalledTimes(19);
   expect(districts).toHaveLength(18);
   expect(demoObjects).toHaveLength(1);
   expect(rawPoint.type).toBe('Feature');
@@ -175,6 +175,7 @@ it('filters one and multiple categories locally and restores all without recreat
     ['==', ['geometry-type'], 'Point'],
     ['!', ['in', ['get', 'categoryId'], ['literal', [
       'metro-station', 'metro-entrance', 'transport-stop', 'school',
+      'kindergarten-public', 'kindergarten-private', 'kindergarten-unknown',
     ]]]],
   ]);
   fireEvent.click(demo);

@@ -1,5 +1,9 @@
 # Модули
 
+SPRINT 11 adds `kindergartens`: a specialized model/API, real OSM importer,
+public/private/unknown categories, a registered map layer and basic proximity
+analysis. It reuses education normalization and the ingestion platform.
+
 SPRINT 10 adds `schools`: a specialized table/API and importer for OSM schools,
 lyceums, gymnasiums and privately operated schools. School points and catchments
 have separate Layer Registry toggles. The catchment status is explicit rather

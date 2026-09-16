@@ -6,21 +6,10 @@ from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.database import get_engine
+from app.spatial import parse_bbox
 
 router = APIRouter(prefix="/api/schools", tags=["schools"])
 logger = logging.getLogger(__name__)
-
-
-def _bbox(value: str | None) -> tuple[float, float, float, float] | None:
-    if value is None:
-        return None
-    try:
-        west, south, east, north = (float(part) for part in value.split(","))
-    except ValueError:
-        raise HTTPException(status_code=422, detail="bbox must contain four numbers") from None
-    if not (-180 <= west < east <= 180 and -90 <= south < north <= 90):
-        raise HTTPException(status_code=422, detail="bbox is invalid")
-    return west, south, east, north
 
 
 @router.get("")
@@ -29,7 +18,7 @@ def schools(
     operator: str | None = Query(default=None, pattern="^(public|private|unknown)$"),
     limit: int = Query(default=500, ge=1, le=2000),
 ) -> list[dict[str, Any]]:
-    bounds = _bbox(bbox)
+    bounds = parse_bbox(bbox)
     conditions = ["true"]
     params: dict[str, Any] = {"limit": limit}
     if bounds:

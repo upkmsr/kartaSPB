@@ -28,6 +28,7 @@ const TROLLEYBUS_ROUTES = 'transport-trolleybus-routes';
 const TRANSPORT_STOPS = 'transport-stops';
 const SCHOOL_POINTS = 'school-points';
 const SCHOOL_CATCHMENTS = 'school-catchments';
+const KINDERGARTEN_POINTS = 'kindergarten-points';
 const SEARCH_SOURCE = 'search-result';
 const SEARCH_LAYER = 'search-result-marker';
 const MAP_LAYERS: Record<ProjectLayerId, readonly string[]> = {
@@ -44,6 +45,7 @@ const MAP_LAYERS: Record<ProjectLayerId, readonly string[]> = {
   'transport-stops': [TRANSPORT_STOPS],
   schools: [SCHOOL_POINTS],
   'school-catchments': [SCHOOL_CATCHMENTS],
+  kindergartens: [KINDERGARTEN_POINTS],
 };
 
 interface MapCallbacks {
@@ -81,6 +83,7 @@ export function createMap(
     map.setFilter(OBJECT_LAYER, ['all', visible, ['==', ['geometry-type'], 'Point'], [
       '!', ['in', ['get', 'categoryId'], ['literal', [
         'metro-station', 'metro-entrance', 'transport-stop', 'school',
+        'kindergarten-public', 'kindergarten-private', 'kindergarten-unknown',
       ]]],
     ]]);
     for (const [layer, category] of [
@@ -90,6 +93,9 @@ export function createMap(
       map.setFilter(layer, ['all', visible, ['==', ['get', 'categoryId'], category]]);
     }
     map.setFilter(SCHOOL_POINTS, ['all', visible, ['==', ['get', 'categoryId'], 'school']]);
+    map.setFilter(KINDERGARTEN_POINTS, ['all', visible, ['in', ['get', 'categoryId'], [
+      'literal', ['kindergarten-public', 'kindergarten-private', 'kindergarten-unknown'],
+    ]]]);
     map.setFilter(METRO_LINE, ['all', visible, ['==', ['get', 'categoryId'], 'metro-line']]);
     map.setFilter(METRO_STATION, ['all', visible, ['==', ['get', 'categoryId'], 'metro-station']]);
     map.setFilter(METRO_ENTRANCE, ['all', visible, ['==', ['get', 'categoryId'], 'metro-entrance']]);
@@ -140,6 +146,7 @@ export function createMap(
     map.setPaintProperty(TRANSPORT_STOPS, 'circle-opacity', registry['transport-stops'].opacity);
     map.setPaintProperty(SCHOOL_POINTS, 'circle-opacity', registry.schools.opacity);
     map.setPaintProperty(SCHOOL_CATCHMENTS, 'fill-opacity', registry['school-catchments'].opacity);
+    map.setPaintProperty(KINDERGARTEN_POINTS, 'circle-opacity', registry.kindergartens.opacity);
     applySelection();
   };
 
@@ -174,6 +181,11 @@ export function createMap(
       { id: TRANSPORT_STOPS, type: 'circle', source: SOURCES['demo-object'], filter: ['==', ['get', 'categoryId'], 'transport-stop'], paint: { 'circle-radius': 4, 'circle-color': '#f5d06f', 'circle-stroke-width': 1.5, 'circle-stroke-color': '#42371b' } },
       { id: SCHOOL_CATCHMENTS, type: 'fill', source: SCHOOL_CATCHMENTS, paint: { 'fill-color': '#e2b45e', 'fill-opacity': 0.25 } },
       { id: SCHOOL_POINTS, type: 'circle', source: SOURCES['demo-object'], filter: ['==', ['get', 'categoryId'], 'school'], paint: { 'circle-radius': 6, 'circle-color': '#e2b45e', 'circle-stroke-width': 2, 'circle-stroke-color': '#513b16' } },
+      { id: KINDERGARTEN_POINTS, type: 'circle', source: SOURCES['demo-object'], filter: ['in', ['get', 'categoryId'], ['literal', ['kindergarten-public', 'kindergarten-private', 'kindergarten-unknown']]], paint: {
+        'circle-radius': 5,
+        'circle-color': ['match', ['get', 'categoryId'], 'kindergarten-public', '#b178dc', 'kindergarten-private', '#d76caa', '#a8a3b6'],
+        'circle-stroke-width': 2, 'circle-stroke-color': '#392448',
+      } },
       { id: OBJECT_LAYER, type: 'circle', source: SOURCES['demo-object'], paint: { 'circle-radius': 13, 'circle-color': '#77dfcc', 'circle-stroke-width': 4, 'circle-stroke-color': '#163e42' } },
       { id: DISTRICT_SELECTED, type: 'line', source: SOURCES.districts, filter: ['in', ['get', 'id'], ['literal', []]], paint: { 'line-color': '#b8fff2', 'line-width': 3, 'line-opacity': 0.7 } },
       { id: SEARCH_LAYER, type: 'circle', source: SEARCH_SOURCE, paint: { 'circle-radius': 10, 'circle-color': '#ffc078', 'circle-stroke-width': 4, 'circle-stroke-color': '#402d19' } },
@@ -192,6 +204,7 @@ export function createMap(
       METRO_LINE, METRO_STATION, METRO_ENTRANCE,
       BUS_ROUTES, TRAM_ROUTES, TROLLEYBUS_ROUTES, TRANSPORT_STOPS,
       SCHOOL_POINTS,
+      KINDERGARTEN_POINTS,
     ];
     const features = map.queryRenderedFeatures(event.point, { layers: [...objectLayers, DISTRICT_FILL] });
     const object = features.find((feature) => objectLayers.includes(feature.layer.id));
@@ -209,6 +222,7 @@ export function createMap(
         METRO_LINE, METRO_STATION, METRO_ENTRANCE, DISTRICT_FILL,
         BUS_ROUTES, TRAM_ROUTES, TROLLEYBUS_ROUTES, TRANSPORT_STOPS,
         SCHOOL_POINTS,
+        KINDERGARTEN_POINTS,
       ],
     }).length ? 'pointer' : '';
   });

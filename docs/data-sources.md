@@ -1,5 +1,26 @@
 # Источники данных
 
+## SPRINT 11 — Kindergartens
+
+- Source: OpenStreetMap `amenity=kindergarten` nodes, ways and relations within
+  OSM Petersburg area `3600337422`, collected 2026-09-16 through
+  `https://overpass-api.de/api/interpreter`. License ODbL 1.0; attribution
+  © OpenStreetMap contributors. Raw snapshot:
+  `backend/app/kindergartens/snapshots/spb_kindergartens.json`.
+- Source returned 1,575 elements; 1,503 named objects are eligible for initial
+  import. Provider-computed centers represent way/relation locations, not entrances.
+  OSM type/ID is retained, so distinct buildings are not merged solely by name,
+  ref or nearby coordinates.
+- Public/private uses only explicit `operator:type`; missing/other values remain
+  `unknown`. Confidence is the documented completeness score used for Schools,
+  not a quality or availability rating. Source snapshot time and optional
+  `check_date` are separate fields; capacity/price/reviews remain NULL.
+- Official admissions source: [Saint Petersburg government admission page](https://www.gov.spb.ru/gov/terr/reg_center/obrazovanie/poryadok-priema-v-obrazovatelnye-uchrezhdeniya/)
+  describes 2026 kindergarten placement periods and rules. Saved as `text_rule`
+  with source URL; it is not converted into a polygon or an admission guarantee.
+- Limitations: OSM has incomplete private-kindergarten tagging and does not
+  provide a complete official registry or live availability. No fees are inferred.
+
 ## SPRINT 10 — Schools
 
 - Source: OpenStreetMap `amenity=school` nodes, ways and relations within OSM

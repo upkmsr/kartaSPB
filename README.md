@@ -5,6 +5,10 @@ Master Specification: [KARTASPB_AI_AGENT_SPEC.md](KARTASPB_AI_AGENT_SPEC.md).
 
 ## Текущий этап
 
+SPRINT 11 — детские сады Петербурга: отдельная модель/API, слой и фильтры
+государственных/частных садов. После запуска выполните
+`docker compose exec backend python -m app.kindergartens`.
+
 SPRINT 10 — школы Петербурга: 1 031 объект из OSM, отдельная модель и bbox API,
 слой школ и явное предупреждение об отсутствии проверенных полигонов закрепления.
 После запуска выполните `docker compose exec backend python -m app.schools`.
@@ -73,6 +77,8 @@ docker compose up --build --wait
 - Nearby transport: `GET /api/analysis/transport/nearby?lon=30.3158&lat=59.9391`
 - Schools: `GET /api/schools?bbox=30.2,59.8,30.4,60.0`
 - School catchment status: `GET /api/schools/catchments`
+- Kindergartens: `GET /api/kindergartens?bbox=30.2,59.8,30.4,60.0`
+- Nearby kindergartens: `GET /api/kindergartens/nearby?lon=30.3158&lat=59.9391`
 
 Compose ждёт БД, выполняет `alembic upgrade head`, затем запускает API и frontend.
 БД хранится в named volume, порт БД наружу не публикуется.

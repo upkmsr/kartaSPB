@@ -1,5 +1,16 @@
 # Архитектура
 
+## SPRINT 11 — Kindergartens
+
+`app.kindergartens` uses the same ingestion pipeline and shared `app.education`
+field-normalization helpers as Schools. It has its own specialized table and API,
+while canonical point geometry and source provenance remain in CORE. Public,
+private and unknown are separate canonical categories, so existing category
+filters provide type selection; one Layer Registry entry controls kindergarten
+visibility. `/api/kindergartens` accepts bbox/limit, and `/nearby` returns
+straight-line PostGIS distance plus nearby public/private/unknown counts.
+Admission rules are stored as source-linked text, never synthesized geometry.
+
 ## SPRINT 10 — Schools
 
 `app.schools` reuses the source/staging/validation/provenance pipeline, with an

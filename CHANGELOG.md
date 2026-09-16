@@ -1,5 +1,11 @@
 # Changelog
 
+## SPRINT 11
+
+- Added real public/private/unknown kindergarten import, specialized fields,
+  provenance, bbox API, map layer/card and straight-line nearby analysis.
+- Recorded official admissions rules as sourced text without invented polygons.
+
 ## SPRINT 10
 
 - Added specialized school storage, broad OSM school import, source freshness and
