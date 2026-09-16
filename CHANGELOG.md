@@ -1,5 +1,12 @@
 # Changelog
 
+## SPRINT 5
+
+- Added the shared source registry, ingestion runs, staging, validation,
+  normalization, deduplication keys, error records and object provenance.
+- Added an idempotent transactional importer, acceptance fixture and import
+  observability API.
+
 ## SPRINT 4
 
 - Added bounded PostGIS project search over canonical objects and categories.

@@ -1,5 +1,10 @@
 # Модули
 
+SPRINT 5 добавляет общий ingestion CORE в `app/ingestion`. Он не содержит
+предметных данных. Новый адаптер обязан выдать raw payload и нормализованный
+`ImportRecord`, а pipeline выполняет staging, validation, idempotent upsert,
+статистику и provenance.
+
 SPRINT 4 adds application search over CORE objects and a replaceable geocoder
 adapter. It does not add an ingestion, external POI, or domain data module.
 

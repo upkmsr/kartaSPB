@@ -1,5 +1,18 @@
 # Архитектура
 
+## SPRINT 5 — Data Ingestion Framework
+
+Любой внешний dataset проходит одинаковую границу: source adapter → immutable raw
+staging → normalization → validation → deterministic upsert в canonical objects →
+provenance. `data_sources` хранит лицензию и attribution, `ingestion_runs` — реальные
+счётчики запуска, `ingestion_errors` — диагностируемые ошибки, а
+`object_provenance` связывает canonical object с исходной записью и временем проверки.
+
+Импорты запускаются CLI/worker-командами и не удерживают HTTP request. Read-only
+эндпоинты `/api/import/status`, `/api/import/runs` и `/api/import/errors` дают
+операционную видимость. Стабильный canonical ID строится из source ID и source record
+ID; повторный импорт делает upsert и обновляет provenance без создания объектов.
+
 ## SPRINT 4 — Search & Geocoding
 
 Project Search and geographic search are separate endpoints and repositories.

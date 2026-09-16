@@ -1,5 +1,12 @@
 # Источники данных
 
+## Source registry (SPRINT 5)
+
+Внешний источник допускается в importer только после регистрации URL, лицензии,
+attribution, типа, приоритета и ограничений в `data_sources`. Raw записи сохраняются
+в staging до validation. `test-fixture` и `integration-fixture` — явно синтетические
+локальные fixtures для проверки pipeline; они не являются геоданными продукта.
+
 ## SPRINT 4 — Nominatim development geocoder
 
 - Endpoint by default: `https://nominatim.openstreetmap.org/search`; configurable
