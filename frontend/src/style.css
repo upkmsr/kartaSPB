@@ -26,6 +26,16 @@ h1 { font-size: clamp(22px, 2.2vw, 30px); letter-spacing: -.035em; margin: 0 0 1
 .category-panel label { display: flex; align-items: center; gap: 8px; min-height: 36px; }
 .category-panel input { accent-color: #77dfcc; }
 .category-panel button { font-size: 11px; padding: 6px 10px; }
+.search-panel { position: relative; margin-bottom: 14px; }
+.search-panel label { display: block; margin-bottom: 6px; color: #b7c4d5; font-size: 11px; }
+.search-row { display: flex; gap: 6px; }
+.search-row input { min-width: 0; flex: 1; min-height: 42px; padding: 9px 11px; border: 1px solid #527276; border-radius: 6px; background: #101d27; color: #edf5fa; font: inherit; }
+.search-row input:focus-visible { outline: 3px solid #77dfcc; outline-offset: 2px; }
+.search-row button { padding: 7px 9px; font-size: 11px; }
+.search-results { position: absolute; z-index: 5; top: calc(100% + 6px); left: 0; width: min(420px, 90vw); max-height: 46vh; overflow: auto; padding: 12px; border: 1px solid #527276; border-radius: 7px; background: #0b111bfa; box-shadow: 0 14px 35px #0008; }
+.search-results h2 { margin: 8px 0; color: #77dfcc; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+.search-results p, .search-results small { display: block; margin: 8px 0; color: #a9b8c6; font-size: 11px; }
+.search-results button { display: block; width: 100%; margin: 4px 0; padding: 9px; text-align: left; font-size: 12px; }
 .district-panel { position: absolute; z-index: 2; top: 24px; left: 24px; width: 296px; max-height: calc(100% - 76px); overflow: auto; border: 1px solid #31434d; border-radius: 8px; background: #0b111bf2; box-shadow: 0 14px 40px #0004; }
 .district-panel details + details { border-top: 1px solid #31434d; }
 .district-panel summary { display: flex; justify-content: space-between; padding: 14px 16px; color: #e5edf5; font-size: 13px; font-weight: 700; cursor: pointer; }

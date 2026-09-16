@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 
 from app.database import check_database, get_engine
 from app.objects import router
+from app.search import router as search_router
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +20,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 app = FastAPI(title="KARTASPB", version="0.1.0", lifespan=lifespan)
 app.include_router(router)
+app.include_router(search_router)
 
 
 @app.get("/api/health/live")

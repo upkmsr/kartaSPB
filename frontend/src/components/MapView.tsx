@@ -5,6 +5,7 @@ import type { Category, MapObject } from '../domain/mapObject';
 import { districtFeatureCollection } from '../data/districts';
 import type { DistrictId } from '../domain/district';
 import type { LayerRegistry } from '../domain/layers';
+import type { MapTarget } from '../domain/search';
 import { createMap } from '../map/mapLibreAdapter';
 
 interface MapViewProps {
@@ -15,9 +16,10 @@ interface MapViewProps {
   objects?: MapObject[];
   categories?: Category[];
   visibleCategoryIds?: string[];
+  mapTarget?: MapTarget;
 }
 
-export function MapView({ onObjectClick, onDistrictClick, selectedDistrictIds, layers, objects = [], categories = [], visibleCategoryIds = [] }: MapViewProps) {
+export function MapView({ onObjectClick, onDistrictClick, selectedDistrictIds, layers, objects = [], categories = [], visibleCategoryIds = [], mapTarget }: MapViewProps) {
   const container = useRef<HTMLDivElement>(null);
   const onClick = useRef(onObjectClick);
   const onDistrict = useRef(onDistrictClick);
@@ -34,6 +36,7 @@ export function MapView({ onObjectClick, onDistrictClick, selectedDistrictIds, l
   useEffect(() => { adapter.current?.setLayers(layers); }, [layers]);
   useEffect(() => { adapter.current?.setObjects(objects); }, [objects]);
   useEffect(() => { adapter.current?.setCategories(categories, visibleCategoryIds); }, [categories, visibleCategoryIds]);
+  useEffect(() => { if (mapTarget) adapter.current?.focus(mapTarget); }, [mapTarget]);
   useEffect(() => {
     if (!container.current) return;
     let mapAdapter: ReturnType<typeof createMap> | undefined;

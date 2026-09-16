@@ -5,6 +5,9 @@ import { ObjectCard } from './components/ObjectCard';
 import { DistrictPanel } from './components/DistrictPanel';
 import { objectsApi, getCategoryById } from './data/objectsApi';
 import { CategoryPanel } from './components/CategoryPanel';
+import { SearchPanel } from './components/SearchPanel';
+import { geocoderProvider, geometryCenter } from './domain/search';
+import type { MapTarget } from './domain/search';
 import { districts } from './data/districts';
 import type { DistrictId } from './domain/district';
 import { toggleDistrict } from './domain/district';
@@ -21,6 +24,7 @@ export function App() {
   const [visibleCategoryIds, setVisibleCategoryIds] = useState<string[]>([]);
   const [dataStatus, setDataStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [dataAttempt, setDataAttempt] = useState(0);
+  const [mapTarget, setMapTarget] = useState<MapTarget>();
   useEffect(() => {
     const controller = new AbortController();
     let active = true;
@@ -66,12 +70,22 @@ export function App() {
         objects={objects}
         categories={categories}
         visibleCategoryIds={visibleCategoryIds}
+        mapTarget={mapTarget}
         selectedDistrictIds={selectedDistrictIds}
         layers={layers}
         onDistrictClick={(id) => setSelectedDistrictIds((current) => toggleDistrict(current, id))}
         onObjectClick={selectObject}
       />
       <div className="map-intro">
+        <SearchPanel geocoder={geocoderProvider}
+          onObjectSelect={(object) => {
+            setSelectedObject(object);
+            setMapTarget({ coordinates: geometryCenter(object), token: Date.now(), showMarker: false });
+          }}
+          onGeographicSelect={(result) => {
+            setSelectedObject(null);
+            setMapTarget({ coordinates: result.coordinates, token: Date.now(), showMarker: true });
+          }} />
         <p className="eyebrow">ИССЛЕДОВАНИЕ ТЕРРИТОРИИ</p>
         <h1>Санкт-Петербург</h1>
         <p>Выберите районы в панели или на карте.<br />Мятная точка открывает карточку.</p>

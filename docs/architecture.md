@@ -1,5 +1,17 @@
 # Архитектура
 
+## SPRINT 4 — Search & Geocoding
+
+Project Search and geographic search are separate endpoints and repositories.
+`/api/search/objects` queries canonical `project_objects`; it has no dependency on
+Nominatim, OpenFreeMap or the tile provider. `GeocoderProvider` returns normalized
+`GeocodingResult` values and currently talks to the backend Nominatim proxy.
+
+React owns the current query/results and reuses `selectedObject`. Project result
+selection opens the existing card and calls the map adapter `focus`; geographic
+selection clears the card and replaces GeoJSON in the temporary `search-result`
+source. Neither operation recreates MapLibre or writes to PostGIS.
+
 ## SPRINT 3 — текущая object pipeline
 
 `project_objects` (PostGIS) → `app/objects.py` repository/read-only API →

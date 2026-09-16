@@ -24,6 +24,8 @@ const { maps, MockMap } = vi.hoisted(() => {
     setFilter = vi.fn();
     setPaintProperty = vi.fn();
     setLayoutProperty = vi.fn();
+    flyTo = vi.fn();
+    getZoom = vi.fn(() => 12);
     renderedFeatures: RenderedFeature[] = [];
     queryRenderedFeatures = vi.fn(() => this.renderedFeatures);
     remove = vi.fn();
@@ -71,7 +73,7 @@ it('mounts a map container and supplies one separate GeoJSON source with a stabl
     type: 'geojson', data: toGeoJSON(demoObjects),
   });
   expect(maps[0].addSource).toHaveBeenCalledWith('districts', expect.objectContaining({ type: 'geojson' }));
-  expect(maps[0].addLayer).toHaveBeenCalledTimes(4);
+  expect(maps[0].addLayer).toHaveBeenCalledTimes(5);
   expect(districts).toHaveLength(18);
   expect(demoObjects).toHaveLength(1);
   expect(rawPoint.type).toBe('Feature');

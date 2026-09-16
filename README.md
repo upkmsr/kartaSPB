@@ -5,6 +5,10 @@ Master Specification: [KARTASPB_AI_AGENT_SPEC.md](KARTASPB_AI_AGENT_SPEC.md).
 
 ## Текущий этап
 
+SPRINT 4 — раздельный поиск объектов KARTASPB и адресов/мест. Введите не менее
+двух символов; результаты проекта открывают canonical Object Card, географические
+результаты перемещают карту и показывают временный маркер.
+
 SPRINT 3 — canonical project objects, категории и локальные category filters.
 Объекты загружаются из PostgreSQL/PostGIS через read-only API.
 На чистой БД список объектов пуст; для демонстрации после запуска выполните:
@@ -44,6 +48,8 @@ docker compose up --build --wait
 - API docs: http://localhost:8000/docs
 - Liveness: http://localhost:8000/api/health/live
 - Readiness (PostGIS и миграция): http://localhost:8000/api/health/ready
+- Project Search: `GET /api/search/objects?q=Тестовый`
+- Geographic Search: `GET /api/search/geocode?q=Дворцовая площадь`
 
 Compose ждёт БД, выполняет `alembic upgrade head`, затем запускает API и frontend.
 БД хранится в named volume, порт БД наружу не публикуется.

@@ -8,12 +8,15 @@ import type { LayerRegistry, ProjectLayerId } from '../domain/layers';
 import { orderedLayers } from '../domain/layers';
 import type { Category, MapObject } from '../domain/mapObject';
 import { toGeoJSON } from '../domain/mapObject';
+import type { MapTarget } from '../domain/search';
 
 const SOURCES = { districts: 'districts', 'demo-object': 'demo-objects' } as const;
 const DISTRICT_FILL = 'district-fill';
 const DISTRICT_OUTLINE = 'district-outline';
 const DISTRICT_SELECTED = 'district-selected';
 const OBJECT_LAYER = 'demo-points';
+const SEARCH_SOURCE = 'search-result';
+const SEARCH_LAYER = 'search-result-marker';
 const MAP_LAYERS: Record<ProjectLayerId, readonly string[]> = {
   districts: [DISTRICT_FILL, DISTRICT_OUTLINE, DISTRICT_SELECTED],
   'demo-object': [OBJECT_LAYER],
@@ -92,11 +95,13 @@ export function createMap(
   map.on('style.load', () => {
     map.addSource(SOURCES.districts, { type: 'geojson', data: districtData });
     map.addSource(SOURCES['demo-object'], { type: 'geojson', data: toGeoJSON(currentObjects) });
+    map.addSource(SEARCH_SOURCE, { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
     const definitions: AddLayerObject[] = [
       { id: DISTRICT_FILL, type: 'fill', source: SOURCES.districts, paint: { 'fill-color': '#17343c', 'fill-opacity': 0.14 } },
       { id: DISTRICT_OUTLINE, type: 'line', source: SOURCES.districts, paint: { 'line-color': '#76a9ad', 'line-width': 1.2, 'line-opacity': 0.7 } },
       { id: OBJECT_LAYER, type: 'circle', source: SOURCES['demo-object'], paint: { 'circle-radius': 13, 'circle-color': '#77dfcc', 'circle-stroke-width': 4, 'circle-stroke-color': '#163e42' } },
       { id: DISTRICT_SELECTED, type: 'line', source: SOURCES.districts, filter: ['in', ['get', 'id'], ['literal', []]], paint: { 'line-color': '#b8fff2', 'line-width': 3, 'line-opacity': 0.7 } },
+      { id: SEARCH_LAYER, type: 'circle', source: SEARCH_SOURCE, paint: { 'circle-radius': 10, 'circle-color': '#ffc078', 'circle-stroke-width': 4, 'circle-stroke-color': '#402d19' } },
     ];
     for (const definition of definitions) map.addLayer(definition);
     loaded = true;
@@ -131,6 +136,14 @@ export function createMap(
     },
     setCategories: (definitions: Category[], ids: string[]) => {
       categories = definitions; visibleCategories = ids; applyCategories();
+    },
+    focus: (target: MapTarget) => {
+      if (!loaded) return;
+      const source = map.getSource(SEARCH_SOURCE) as GeoJSONSource;
+      source.setData({ type: 'FeatureCollection', features: target.showMarker ? [{
+        type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: target.coordinates },
+      }] : [] });
+      map.flyTo({ center: target.coordinates, zoom: Math.max(map.getZoom(), 14) });
     },
   };
 }

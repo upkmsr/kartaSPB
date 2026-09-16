@@ -26,6 +26,8 @@ services:
       DB_NAME: ${POSTGRES_DB:-kartaspb}
       DB_USER: ${POSTGRES_USER:-kartaspb}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-kartaspb_local}
+      GEOCODER_URL: ${GEOCODER_URL:-https://nominatim.openstreetmap.org/search}
+      GEOCODER_USER_AGENT: ${GEOCODER_USER_AGENT:-KARTASPB-development/0.4 (local GIS project)}
     command: [alembic, upgrade, head]
     depends_on:
       db:

@@ -1,5 +1,8 @@
 # Модули
 
+SPRINT 4 adds application search over CORE objects and a replaceable geocoder
+adapter. It does not add an ingestion, external POI, or domain data module.
+
 SPRINT 3 добавляет canonical object persistence/API и категории в CORE.
 Предметные модули и search/geocoding отсутствуют; поиск отложен до SPRINT 4
 по отдельному указанию владельца. Районы не включаются в POI model.

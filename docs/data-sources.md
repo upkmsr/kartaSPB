@@ -1,5 +1,25 @@
 # Источники данных
 
+## SPRINT 4 — Nominatim development geocoder
+
+- Endpoint by default: `https://nominatim.openstreetmap.org/search`; configurable
+  with `GEOCODER_URL` without rebuilding the frontend.
+- Identification: configurable `GEOCODER_USER_AGENT`; requests run through backend.
+- Policy checked 2026-09-16: absolute maximum 1 request/second, valid identifying
+  User-Agent/Referer, visible attribution, provider replaceability and caching.
+- Implementation serializes requests, enforces at least one second between uncached
+  calls, caches identical query/limit pairs in process, limits results to 10, and
+  only sends searches explicitly submitted by the user. It does not implement
+  Nominatim autocomplete; debounce applies only to independent project search.
+- Public Nominatim forbids client-side autocomplete, bulk/systematic requests,
+  POI downloads and confidential/personal query data. This integration is for
+  moderate development use; production or higher traffic requires a separately
+  selected/self-hosted provider.
+- Results: © OpenStreetMap contributors, ODbL. Attribution is shown in results and
+  the map. Results are temporary and are not inserted into project objects.
+
+Policy: https://operations.osmfoundation.org/policies/nominatim/
+
 ## SPRINT 1 — development basemap
 
 Проверено 2026-09-15:

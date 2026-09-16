@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from pydantic import SecretStr
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
 
@@ -13,6 +13,13 @@ class Settings(BaseSettings):
     name: str = "kartaspb"
     user: str = "kartaspb"
     password: SecretStr = SecretStr("kartaspb_local")
+    geocoder_url: str = Field(
+        default="https://nominatim.openstreetmap.org/search", validation_alias="GEOCODER_URL"
+    )
+    geocoder_user_agent: str = Field(
+        default="KARTASPB-development/0.4 (local GIS project)",
+        validation_alias="GEOCODER_USER_AGENT",
+    )
 
     @property
     def database_url(self) -> URL:

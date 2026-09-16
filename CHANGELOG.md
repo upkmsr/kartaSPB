@@ -1,5 +1,12 @@
 # Changelog
 
+## SPRINT 4
+
+- Added bounded PostGIS project search over canonical objects and categories.
+- Added replaceable, normalized Nominatim proxy with identification, throttling and cache.
+- Added debounced accessible search UI, independent result sections, cancellation and stale protection.
+- Added map focus and a non-persistent geographic result marker.
+
 ## SPRINT 3
 
 - Canonical objects in PostGIS, category persistence, read-only API and category queries.
