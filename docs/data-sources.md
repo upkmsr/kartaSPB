@@ -309,3 +309,22 @@ Development dataset: `frontend/src/data/districts/spb-districts.json`.
 
 GeoJSON является временным development snapshot. Его source boundary изолирован
 в `data/districts/index.ts`, что позволяет в будущем заменить загрузку API/PostGIS.
+## SPRINT 14 — transport influence sources
+
+- `osm-rail-noise`: [BBBike SanktPetersburg OSM PBF](https://download.bbbike.org/osm/bbbike/SanktPetersburg/SanktPetersburg.osm.pbf),
+  OSM snapshot `2026-09-11T23:00:00Z`, collected and verified `2026-09-16`.
+  Method: bounded city extract of `railway=rail` ways; service tracks omitted from
+  the displayed layer. License ODbL 1.0, © OpenStreetMap contributors.
+  Alignment only, not sound measurements; boundary and freshness limitations.
+- `road-influence`: derived on `2026-09-16` from SPRINT 13 `osm-roads` geometry
+  and tags (OSM snapshots `2026-07-15` and `2026-09-11`).
+  [OSM license](https://www.openstreetmap.org/copyright): ODbL 1.0,
+  © OpenStreetMap contributors; KARTASPB qualitative classification.
+  Road class and lanes are only a potential exposure tier. Traffic volume,
+  propagation, sound levels, time of day and shielding are unknown.
+- Aviation and helicopter noise: no source registered as an imported dataset.
+  [Rosaviatsia Pulkovo approach zones](https://favt.gov.ru/dejatelnost-ajeroporty-i-ajerodromy-priaerodromnie-territorii/?id=3867)
+  and [city aviation information](https://www.gov.spb.ru/gov/otrasl/c_transport/vneshnij-transport/vozdushnyj-transport/)
+  were checked `2026-09-16`. These are not open, machine-readable acoustic
+  contours or verified helicopter corridors. No geometry was digitized from
+  an image or inferred from an airport/heliport point.

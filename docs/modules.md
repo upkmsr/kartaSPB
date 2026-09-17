@@ -57,3 +57,11 @@ core geographic selector на локальном development dataset, а не о
 Предметные модули ещё не созданы. Порядок их реализации определяет Master
 Specification, разделы 70–92. Категории, общие object filters, search, import,
 routing и scoring не входят в SPRINT 2.
+## SPRINT 14 — Noise / Aviation / Helicopters
+
+`app/noise` использует общий ingestion pipeline и canonical objects.
+Дорожные признаки выводятся из импортированного Roads, железнодорожные — из
+датированного OSM-снимка. `noise_sources` хранит тип воздействия, происхождение,
+уверенность, дату и метод отдельно от `project_objects`. Авиационный и
+вертолётный типы зарезервированы без выдуманных геометрий; API возвращает `no_data`.
+MapLibre запрашивает только видимую область и активные категории.

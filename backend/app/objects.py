@@ -53,8 +53,10 @@ def read_objects(
         query += " AND category_id != :exclude_category"
         params["exclude_category"] = exclude_category
     if exclude_category_prefix is not None:
-        query += " AND category_id NOT LIKE :exclude_category_prefix"
-        params["exclude_category_prefix"] = exclude_category_prefix.replace("%", "\\%") + "%"
+        for index, prefix in enumerate(exclude_category_prefix.split(",")):
+            key = f"exclude_prefix_{index}"
+            query += f" AND category_id NOT LIKE :{key}"
+            params[key] = prefix.strip().replace("%", "\\%") + "%"
     statement = text(query + " ORDER BY id")
     if category is not None:
         statement = statement.bindparams(bindparam("categories", expanding=True, type_=String))

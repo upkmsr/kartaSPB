@@ -201,3 +201,10 @@ Basemap и demo source разделены. Клик не делает API/гео
   MapLibre instance при этих действиях не пересоздаётся.
 - При пустом выборе используется нейтральная заливка. При выборе MapLibre
   expression сохраняет выбранные полигоны светлыми и затемняет остальные.
+## SPRINT 14 — spatial influence
+
+Noise использует существующие `project_objects`, `data_sources`, `ingestion_runs`,
+`object_provenance` и слой PostGIS. Отдельная таблица `noise_sources` содержит
+только предметные поля; четыре типа влияния не объединяются в один score.
+`GET /api/analysis/noise/point` возвращает геометрическое расстояние до
+источника и `null` для отсутствующих данных, без оценки дБ и времени поездки.

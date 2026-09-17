@@ -39,6 +39,11 @@ const ROAD_KAD = 'road-kad-lines';
 const ROAD_ZSD = 'road-zsd-lines';
 const ROAD_RAMPS = 'road-ramp-lines';
 const ROAD_INTERCHANGES = 'road-interchange-points';
+const NOISE_SOURCE = 'noise';
+const NOISE_ROAD = 'noise-road-lines';
+const NOISE_RAILWAY = 'noise-railway-lines';
+const NOISE_AVIATION = 'noise-aviation-fill';
+const NOISE_HELICOPTER = 'noise-helicopter-lines';
 const SEARCH_SOURCE = 'search-result';
 const SEARCH_LAYER = 'search-result-marker';
 const MAP_LAYERS: Record<ProjectLayerId, readonly string[]> = {
@@ -62,6 +67,10 @@ const MAP_LAYERS: Record<ProjectLayerId, readonly string[]> = {
   'road-kad': [ROAD_KAD],
   'road-zsd': [ROAD_ZSD],
   'road-interchanges': [ROAD_RAMPS, ROAD_INTERCHANGES],
+  'noise-road': [NOISE_ROAD],
+  'noise-railway': [NOISE_RAILWAY],
+  'noise-aviation': [NOISE_AVIATION],
+  'noise-helicopter': [NOISE_HELICOPTER],
 };
 
 interface MapCallbacks {
@@ -148,6 +157,13 @@ export function createMap(
       const show = Boolean(registry?.[id].visible && categoriesForLayer.some((category) => visibleCategories.includes(category)));
       for (const layer of MAP_LAYERS[id]) map.setLayoutProperty(layer, 'visibility', show ? 'visible' : 'none');
     }
+    for (const [layer, category] of [
+      [NOISE_ROAD, 'noise-road'], [NOISE_RAILWAY, 'noise-railway'],
+      [NOISE_AVIATION, 'noise-aviation'], [NOISE_HELICOPTER, 'noise-helicopter'],
+    ] as const) map.setFilter(layer, ['all', visible, ['==', ['get', 'categoryId'], category]]);
+    for (const id of ['noise-road', 'noise-railway', 'noise-aviation', 'noise-helicopter'] as const) {
+      map.setLayoutProperty(MAP_LAYERS[id][0], 'visibility', registry?.[id].visible && visibleCategories.includes(id) ? 'visible' : 'none');
+    }
   };
 
   const selectionFilter = (): FilterSpecification => ['in', ['get', 'id'], ['literal', [...selectedIds]]];
@@ -167,7 +183,7 @@ export function createMap(
       for (const mapLayer of MAP_LAYERS[layer.id]) {
         const selected = layer.id === 'pharmacies' ? visibleCategories.includes('medical-pharmacy')
           : layer.id === 'road-interchanges' ? visibleCategories.includes('road-ramp') || visibleCategories.includes('road-interchange')
-            : layer.id.startsWith('road-') ? visibleCategories.includes(layer.id) : true;
+            : layer.id.startsWith('road-') || layer.id.startsWith('noise-') ? visibleCategories.includes(layer.id) : true;
         map.setLayoutProperty(mapLayer, 'visibility', layer.visible && selected ? 'visible' : 'none');
       }
     }
@@ -197,6 +213,10 @@ export function createMap(
     map.setPaintProperty(ROAD_ZSD, 'line-opacity', registry['road-zsd'].opacity);
     map.setPaintProperty(ROAD_RAMPS, 'line-opacity', registry['road-interchanges'].opacity);
     map.setPaintProperty(ROAD_INTERCHANGES, 'circle-opacity', registry['road-interchanges'].opacity);
+    map.setPaintProperty(NOISE_ROAD, 'line-opacity', registry['noise-road'].opacity);
+    map.setPaintProperty(NOISE_RAILWAY, 'line-opacity', registry['noise-railway'].opacity);
+    map.setPaintProperty(NOISE_AVIATION, 'fill-opacity', registry['noise-aviation'].opacity * 0.4);
+    map.setPaintProperty(NOISE_HELICOPTER, 'line-opacity', registry['noise-helicopter'].opacity);
     applySelection();
   };
 
@@ -214,6 +234,7 @@ export function createMap(
     map.addSource(SCHOOL_CATCHMENTS, { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
     map.addSource(PHARMACY_SOURCE, { type: 'geojson', data: { type: 'FeatureCollection', features: [] }, cluster: true, clusterRadius: 45 });
     map.addSource(ROADS_SOURCE, { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+    map.addSource(NOISE_SOURCE, { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
     const definitions: AddLayerObject[] = [
       { id: DISTRICT_FILL, type: 'fill', source: SOURCES.districts, paint: { 'fill-color': '#17343c', 'fill-opacity': 0.14 } },
       { id: DISTRICT_OUTLINE, type: 'line', source: SOURCES.districts, paint: { 'line-color': '#76a9ad', 'line-width': 1.2, 'line-opacity': 0.7 } },
@@ -256,6 +277,13 @@ export function createMap(
         'circle-radius': 3.5, 'circle-color': '#d8ba7e', 'circle-stroke-width': 1,
         'circle-stroke-color': '#514633',
       } },
+      { id: NOISE_ROAD, type: 'line', source: NOISE_SOURCE, paint: {
+        'line-color': ['match', ['get', 'influenceClass'], 'high', '#d56555', 'medium', '#d59b58', 'low', '#a6a773', '#87909c'],
+        'line-width': 3,
+      } },
+      { id: NOISE_RAILWAY, type: 'line', source: NOISE_SOURCE, paint: { 'line-color': '#b48cca', 'line-width': 2.5, 'line-dasharray': [2, 1] } },
+      { id: NOISE_AVIATION, type: 'fill', source: NOISE_SOURCE, paint: { 'fill-color': '#7697b7', 'fill-opacity': 0.35 } },
+      { id: NOISE_HELICOPTER, type: 'line', source: NOISE_SOURCE, paint: { 'line-color': '#90a5b3', 'line-width': 2 } },
       { id: OBJECT_LAYER, type: 'circle', source: SOURCES['demo-object'], paint: { 'circle-radius': 13, 'circle-color': '#77dfcc', 'circle-stroke-width': 4, 'circle-stroke-color': '#163e42' } },
       { id: DISTRICT_SELECTED, type: 'line', source: SOURCES.districts, filter: ['in', ['get', 'id'], ['literal', []]], paint: { 'line-color': '#b8fff2', 'line-width': 3, 'line-opacity': 0.7 } },
       { id: SEARCH_LAYER, type: 'circle', source: SEARCH_SOURCE, paint: { 'circle-radius': 10, 'circle-color': '#ffc078', 'circle-stroke-width': 4, 'circle-stroke-color': '#402d19' } },
@@ -268,6 +296,7 @@ export function createMap(
     callbacks.onReady();
     refreshPharmacies();
     refreshRoads();
+    refreshNoise();
   });
   const refreshPharmacies = () => {
     if (!loaded || !registry?.pharmacies.visible || !visibleCategories.includes('medical-pharmacy')) return;
@@ -290,6 +319,19 @@ export function createMap(
     (map.getSource(ROADS_SOURCE) as GeoJSONSource).setData(`/api/roads/viewport.geojson?bbox=${encodeURIComponent(bbox)}&category=${encodeURIComponent(activeCategories.join(','))}`);
   };
   map.on('moveend', refreshRoads);
+  const refreshNoise = () => {
+    if (!loaded || !registry) return;
+    const active = ([
+      ['noise-road', 'road_noise'], ['noise-railway', 'railway_noise'],
+      ['noise-aviation', 'aviation_noise'], ['noise-helicopter', 'helicopter_noise'],
+    ] as const).filter(([id]) => registry?.[id].visible && visibleCategories.includes(id)).map(([, kind]) => kind);
+    const source = map.getSource(NOISE_SOURCE) as GeoJSONSource;
+    if (!active.length) { source.setData({ type: 'FeatureCollection', features: [] }); return; }
+    const bounds = map.getBounds();
+    const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()].join(',');
+    source.setData(`/api/noise/viewport.geojson?bbox=${encodeURIComponent(bbox)}&type=${encodeURIComponent(active.join(','))}`);
+  };
+  map.on('moveend', refreshNoise);
   map.on('click', (event) => {
     if (!loaded) return;
     const objectLayers = [
@@ -300,6 +342,7 @@ export function createMap(
       KINDERGARTEN_POINTS,
       MEDICAL_POINTS, PHARMACY_POINTS,
       ROAD_MAJOR, ROAD_KAD, ROAD_ZSD, ROAD_RAMPS, ROAD_INTERCHANGES,
+      NOISE_ROAD, NOISE_RAILWAY, NOISE_AVIATION, NOISE_HELICOPTER,
     ];
     const features = map.queryRenderedFeatures(event.point, { layers: [...objectLayers, DISTRICT_FILL] });
     const object = features.find((feature) => objectLayers.includes(feature.layer.id));
@@ -325,6 +368,7 @@ export function createMap(
         KINDERGARTEN_POINTS,
         MEDICAL_POINTS, PHARMACY_POINTS, PHARMACY_CLUSTERS,
         ROAD_MAJOR, ROAD_KAD, ROAD_ZSD, ROAD_RAMPS, ROAD_INTERCHANGES,
+        NOISE_ROAD, NOISE_RAILWAY, NOISE_AVIATION, NOISE_HELICOPTER,
       ],
     }).length ? 'pointer' : '';
   });
@@ -333,13 +377,13 @@ export function createMap(
   return {
     resize: () => map.resize(), remove: () => map.remove(),
     setSelectedDistricts: (ids: readonly DistrictId[]) => { selectedIds = ids; applySelection(); },
-    setLayers: (layers: LayerRegistry) => { registry = layers; applyLayers(); refreshPharmacies(); refreshRoads(); },
+    setLayers: (layers: LayerRegistry) => { registry = layers; applyLayers(); refreshPharmacies(); refreshRoads(); refreshNoise(); },
     setObjects: (data: MapObject[]) => {
       currentObjects = data;
       if (loaded) (map.getSource(SOURCES['demo-object']) as GeoJSONSource).setData(toGeoJSON(data));
     },
     setCategories: (definitions: Category[], ids: string[]) => {
-      categories = definitions; visibleCategories = ids; applyCategories(); refreshPharmacies(); refreshRoads();
+      categories = definitions; visibleCategories = ids; applyCategories(); refreshPharmacies(); refreshRoads(); refreshNoise();
     },
     focus: (target: MapTarget) => {
       if (!loaded) return;

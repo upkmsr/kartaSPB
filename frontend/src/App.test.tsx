@@ -77,7 +77,8 @@ it('mounts a map container and supplies one separate GeoJSON source with a stabl
   expect(maps[0].addSource).toHaveBeenCalledWith('districts', expect.objectContaining({ type: 'geojson' }));
   expect(maps[0].addSource).toHaveBeenCalledWith('pharmacies', expect.objectContaining({ cluster: true }));
   expect(maps[0].addSource).toHaveBeenCalledWith('roads', expect.objectContaining({ type: 'geojson' }));
-  expect(maps[0].addLayer).toHaveBeenCalledTimes(27);
+  expect(maps[0].addSource).toHaveBeenCalledWith('noise', expect.objectContaining({ type: 'geojson' }));
+  expect(maps[0].addLayer).toHaveBeenCalledTimes(31);
   expect(districts).toHaveLength(18);
   expect(demoObjects).toHaveLength(1);
   expect(rawPoint.type).toBe('Feature');
@@ -85,6 +86,20 @@ it('mounts a map container and supplies one separate GeoJSON source with a stabl
   expect(rawPoint.id).toBe(rawPoint.properties.id);
   expect(rawPoint.geometry.coordinates).toEqual([30.3158, 59.9391]);
   expect(screen.queryByRole('complementary', { name: 'Тестовый объект' })).toBeNull();
+});
+
+it('shows noise provenance and missing intensity without inventing a dB value', () => {
+  render(<ObjectCard object={{
+    id: 'road-influence-osm-roads-way-1', name: 'Тестовый дорожный сегмент',
+    categoryId: 'noise-road', description: 'Оценочный признак',
+    geometry: { type: 'LineString', coordinates: [[30.1, 59.9], [30.2, 59.9]] },
+    properties: { originType: 'estimated', confidenceLabel: 'LOW', influenceClass: 'medium',
+      intensityDb: null, sourceDataAt: '2026-09-11', method: 'OSM road class' },
+    source: 'road-influence', sourceId: 'osm-roads-way-1',
+  }} categoryName="Дорожное влияние" onClose={vi.fn()} />);
+  expect(screen.getByText('Оценочный признак', { selector: 'dd' })).toBeTruthy();
+  expect(screen.getByText('LOW')).toBeTruthy();
+  expect(screen.getByText('Нет данных', { selector: 'dd' })).toBeTruthy();
 });
 
 it('resolves a map click by ID into React state, closes and reopens the real card', async () => {

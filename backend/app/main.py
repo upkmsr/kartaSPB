@@ -10,6 +10,8 @@ from app.imports import router as import_router
 from app.kindergartens.api import router as kindergartens_router
 from app.medical.api import router as medical_router
 from app.metro.api import router as metro_router
+from app.noise.api import analysis_router as noise_analysis_router
+from app.noise.api import router as noise_router
 from app.objects import router
 from app.roads.api import analysis_router as roads_analysis_router
 from app.roads.api import router as roads_router
@@ -37,6 +39,8 @@ app.include_router(kindergartens_router)
 app.include_router(medical_router)
 app.include_router(roads_router)
 app.include_router(roads_analysis_router)
+app.include_router(noise_router)
+app.include_router(noise_analysis_router)
 
 
 @app.get("/api/health/live")

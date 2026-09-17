@@ -57,6 +57,14 @@ export function ObjectCard({ object, categoryName = 'Нет данных', onClo
         {object.properties.maxspeed && <div><dt>Ограничение скорости</dt><dd>{String(object.properties.maxspeed)}</dd></div>}
         <div><dt>Уверенность данных</dt><dd>{typeof object.properties.confidence === 'number' ? `${Math.round(object.properties.confidence * 100)}%` : 'Нет данных'}</dd></div>
       </>}
+      {object.categoryId.startsWith('noise-') && <>
+        <div><dt>Происхождение</dt><dd>{object.properties.originType === 'estimated' ? 'Оценочный признак' : object.properties.originType === 'measured' ? 'Измерение' : object.properties.originType === 'modeled' ? 'Модель' : 'Неизвестно'}</dd></div>
+        <div><dt>Уверенность</dt><dd>{String(object.properties.confidenceLabel || 'UNKNOWN')}</dd></div>
+        <div><dt>Потенциал влияния</dt><dd>{String(object.properties.influenceClass || 'Нет данных')}</dd></div>
+        <div><dt>Уровень, дБ</dt><dd>{object.properties.intensityDb == null ? 'Нет данных' : String(object.properties.intensityDb)}</dd></div>
+        <div><dt>Дата исходных данных</dt><dd>{String(object.properties.sourceDataAt || 'Нет данных')}</dd></div>
+        <div><dt>Метод</dt><dd>{String(object.properties.method || 'Нет данных')}</dd></div>
+      </>}
     </dl>
     <p className="card-description">{object.description || 'Нет данных'}</p>
   </aside>;

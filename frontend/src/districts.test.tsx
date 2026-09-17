@@ -38,7 +38,9 @@ it('renders labeled district controls that select and clear districts', () => {
     onLayerVisibilityChange={vi.fn()}
     onLayerOpacityChange={vi.fn()}
   />);
-  expect(screen.getAllByRole('checkbox')).toHaveLength(38);
+  expect(screen.getAllByRole('checkbox')).toHaveLength(42);
+  expect(screen.getByText(/уровни дБ неизвестны/i)).toBeTruthy();
+  expect(screen.getByRole('checkbox', { name: 'Авиационный шум · нет данных' })).toBeTruthy();
   const district = screen.getByRole('checkbox', { name: districts[1].properties.name });
   fireEvent.click(district);
   expect(onToggle).toHaveBeenCalledWith(districts[1].id);
@@ -56,11 +58,16 @@ it('updates registry visibility and bounded opacity with stable ordered IDs', ()
   const hiddenKad = updateLayer(initialLayerRegistry, 'road-kad', { visible: false });
   expect(hiddenKad['road-kad'].visible).toBe(false);
   expect(hiddenKad['road-zsd'].visible).toBe(true);
+  const railwayOnly = updateLayer(initialLayerRegistry, 'noise-railway', { visible: true });
+  expect(railwayOnly['noise-railway'].visible).toBe(true);
+  expect(railwayOnly['noise-road'].visible).toBe(false);
+  expect(railwayOnly['noise-aviation'].visible).toBe(false);
   expect(orderedLayers(initialLayerRegistry).map((layer) => layer.id)).toEqual([
     'districts', 'demo-object', 'nature-green', 'nature-water',
     'metro-lines', 'metro-stations', 'metro-entrances',
     'transport-bus', 'transport-tram', 'transport-trolleybus', 'transport-stops',
     'schools', 'school-catchments', 'kindergartens', 'medical', 'pharmacies',
     'road-major', 'road-kad', 'road-zsd', 'road-interchanges',
+    'noise-road', 'noise-railway', 'noise-aviation', 'noise-helicopter',
   ]);
 });

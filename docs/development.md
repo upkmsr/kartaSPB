@@ -162,3 +162,16 @@ PostgreSQL License (PostgreSQL), GPL-2.0-or-later (PostGIS).
 
 Браузерный QA проверяет настоящий WebGL, а не unit mock. Playwright и временные
 снимки для разовой проверки не являются зависимостями или artifacts репозитория.
+## SPRINT 14 import
+
+После `docker compose up --build --wait` и импорта дорог выполните:
+
+```bash
+docker compose exec backend python -m app.noise
+docker compose exec backend alembic current
+docker compose exec backend alembic heads
+```
+
+Повторный импорт обновляет canonical объекты по стабильным ID. Дорожные
+признаки берутся из `roads`; железнодорожный снимок хранится в репозитории.
+В разделе Noise панели слоёв уровни дБ не показываются при отсутствии данных.

@@ -93,3 +93,9 @@
 - Временная OpenFreeMap development-подложка вынесена в заменяемую конфигурацию.
 - Добавлены один demo GeoJSON Point, выбор по stable ID и React-карточка.
 - Добавлены lifecycle, error и responsive состояния карты и frontend tests.
+## SPRINT 14
+
+- Added separate road and railway spatial influence datasets over canonical PostGIS objects.
+- Added explicit source type, confidence, date, method and null acoustic intensity.
+- Added four independently controlled layers, viewport API, availability and point proximity.
+- Documented missing aviation contours and helicopter routes without inferred geometry.

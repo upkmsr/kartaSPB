@@ -5,6 +5,13 @@ Master Specification: [KARTASPB_AI_AGENT_SPEC.md](KARTASPB_AI_AGENT_SPEC.md).
 
 ## Текущий этап
 
+SPRINT 14 — раздельные дорожный и железнодорожный признаки влияния:
+оценочные классы дорог и реальные положения магистральных путей из OSM.
+Это не измерения шума; уровни дБ, авиационные контуры и вертолётные маршруты
+пока неизвестны. После импорта дорог выполните
+`docker compose exec backend python -m app.noise`. Подробности и ограничения:
+[docs/sprint-14.md](docs/sprint-14.md).
+
 SPRINT 13 — дорожная инфраструктура: 5 594 реальных OSM-объекта,
 структурированные сегменты КАД и ЗСД, съезды, явно размеченные развязки,
 bbox API и отдельные слои. После запуска выполните
@@ -97,6 +104,9 @@ docker compose up --build --wait
 - Roads: `GET /api/roads?bbox=30.2,59.8,30.4,60.0&corridor=kad`
 - Road viewport: `GET /api/roads/viewport.geojson?bbox=30.2,59.8,30.4,60.0`
 - Nearest roads: `GET /api/analysis/roads/nearest?lon=30.3158&lat=59.9391`
+- Noise availability: `GET /api/noise/availability`
+- Noise viewport: `GET /api/noise/viewport.geojson?bbox=30.2,59.8,30.4,60.0&type=road_noise,railway_noise`
+- Noise proximity: `GET /api/analysis/noise/point?lon=30.3158&lat=59.9391`
 
 Compose ждёт БД, выполняет `alembic upgrade head`, затем запускает API и frontend.
 БД хранится в named volume, порт БД наружу не публикуется.

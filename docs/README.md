@@ -16,6 +16,7 @@
 - [SPRINT 11 — Kindergartens](sprint-11.md)
 - [SPRINT 12 — Medical](sprint-12.md)
 - [SPRINT 13 — Roads](sprint-13.md)
+- [SPRINT 14 — Noise / Aviation / Helicopters](sprint-14.md)
 
 Общие сведения: [архитектура](architecture.md),
 [источники данных](data-sources.md), [разработка](development.md),
