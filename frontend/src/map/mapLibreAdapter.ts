@@ -9,6 +9,8 @@ import { orderedLayers } from '../domain/layers';
 import type { Category, MapObject } from '../domain/mapObject';
 import { toGeoJSON } from '../domain/mapObject';
 import type { MapTarget } from '../domain/search';
+import type { DrawingDraft, UserGeometry } from '../domain/userGeometry';
+import { draftPreview, toUserGeoJSON } from '../domain/userGeometry';
 
 const SOURCES = { districts: 'districts', 'demo-object': 'demo-objects' } as const;
 const DISTRICT_FILL = 'district-fill';
@@ -44,6 +46,14 @@ const NOISE_ROAD = 'noise-road-lines';
 const NOISE_RAILWAY = 'noise-railway-lines';
 const NOISE_AVIATION = 'noise-aviation-fill';
 const NOISE_HELICOPTER = 'noise-helicopter-lines';
+const USER_SOURCE = 'user-geometries';
+const DRAFT_SOURCE = 'drawing-preview';
+const USER_POINTS = 'user-points';
+const USER_LINES = 'user-lines';
+const USER_AREAS = 'user-areas';
+const DRAFT_FILL = 'drawing-fill';
+const DRAFT_LINE = 'drawing-line';
+const DRAFT_VERTICES = 'drawing-vertices';
 const SEARCH_SOURCE = 'search-result';
 const SEARCH_LAYER = 'search-result-marker';
 const MAP_LAYERS: Record<ProjectLayerId, readonly string[]> = {
@@ -71,11 +81,17 @@ const MAP_LAYERS: Record<ProjectLayerId, readonly string[]> = {
   'noise-railway': [NOISE_RAILWAY],
   'noise-aviation': [NOISE_AVIATION],
   'noise-helicopter': [NOISE_HELICOPTER],
+  'user-points': [USER_POINTS],
+  'user-lines': [USER_LINES],
+  'user-areas': [USER_AREAS],
 };
 
 interface MapCallbacks {
   onObjectClick: (id: string) => void;
   onDistrictClick: (id: DistrictId) => void;
+  onUserGeometryClick?: (id: string) => void;
+  onDrawingClick?: (coordinate: [number, number]) => void;
+  onDrawingVertexClick?: (index: number) => void;
   onReady: () => void;
   onError: () => void;
 }
@@ -100,6 +116,8 @@ export function createMap(
   let selectedIds: readonly DistrictId[] = [];
   let registry: LayerRegistry | undefined;
   let currentObjects = objects;
+  let currentUserGeometries: UserGeometry[] = [];
+  let drawingDraft: DrawingDraft | null = null;
   let categories: Category[] = [];
   let visibleCategories: string[] = [];
   const applyCategories = () => {
@@ -217,6 +235,9 @@ export function createMap(
     map.setPaintProperty(NOISE_RAILWAY, 'line-opacity', registry['noise-railway'].opacity);
     map.setPaintProperty(NOISE_AVIATION, 'fill-opacity', registry['noise-aviation'].opacity * 0.4);
     map.setPaintProperty(NOISE_HELICOPTER, 'line-opacity', registry['noise-helicopter'].opacity);
+    map.setPaintProperty(USER_POINTS, 'circle-opacity', registry['user-points'].opacity);
+    map.setPaintProperty(USER_LINES, 'line-opacity', registry['user-lines'].opacity);
+    map.setPaintProperty(USER_AREAS, 'fill-opacity', 0.35 * registry['user-areas'].opacity);
     applySelection();
   };
 
@@ -235,6 +256,8 @@ export function createMap(
     map.addSource(PHARMACY_SOURCE, { type: 'geojson', data: { type: 'FeatureCollection', features: [] }, cluster: true, clusterRadius: 45 });
     map.addSource(ROADS_SOURCE, { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
     map.addSource(NOISE_SOURCE, { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+    map.addSource(USER_SOURCE, { type: 'geojson', data: toUserGeoJSON(currentUserGeometries) });
+    map.addSource(DRAFT_SOURCE, { type: 'geojson', data: draftPreview(drawingDraft) });
     const definitions: AddLayerObject[] = [
       { id: DISTRICT_FILL, type: 'fill', source: SOURCES.districts, paint: { 'fill-color': '#17343c', 'fill-opacity': 0.14 } },
       { id: DISTRICT_OUTLINE, type: 'line', source: SOURCES.districts, paint: { 'line-color': '#76a9ad', 'line-width': 1.2, 'line-opacity': 0.7 } },
@@ -284,6 +307,12 @@ export function createMap(
       { id: NOISE_RAILWAY, type: 'line', source: NOISE_SOURCE, paint: { 'line-color': '#b48cca', 'line-width': 2.5, 'line-dasharray': [2, 1] } },
       { id: NOISE_AVIATION, type: 'fill', source: NOISE_SOURCE, paint: { 'fill-color': '#7697b7', 'fill-opacity': 0.35 } },
       { id: NOISE_HELICOPTER, type: 'line', source: NOISE_SOURCE, paint: { 'line-color': '#90a5b3', 'line-width': 2 } },
+      { id: USER_AREAS, type: 'fill', source: USER_SOURCE, filter: ['==', ['get', 'geometryType'], 'Polygon'], paint: { 'fill-color': '#edcf75', 'fill-opacity': 0.3, 'fill-outline-color': '#f5d988' } },
+      { id: USER_LINES, type: 'line', source: USER_SOURCE, filter: ['==', ['get', 'geometryType'], 'LineString'], paint: { 'line-color': '#f4cd69', 'line-width': 4 } },
+      { id: USER_POINTS, type: 'circle', source: USER_SOURCE, filter: ['==', ['get', 'geometryType'], 'Point'], paint: { 'circle-radius': 7, 'circle-color': '#f5d988', 'circle-stroke-width': 2, 'circle-stroke-color': '#463d23' } },
+      { id: DRAFT_FILL, type: 'fill', source: DRAFT_SOURCE, paint: { 'fill-color': '#f2dc8a', 'fill-opacity': 0.3 } },
+      { id: DRAFT_LINE, type: 'line', source: DRAFT_SOURCE, paint: { 'line-color': '#ffedab', 'line-width': 3, 'line-dasharray': [2, 1] } },
+      { id: DRAFT_VERTICES, type: 'circle', source: DRAFT_SOURCE, paint: { 'circle-radius': 7, 'circle-color': ['case', ['get', 'selected'], '#ff8359', '#fff0b7'], 'circle-stroke-width': 2, 'circle-stroke-color': '#503b20' } },
       { id: OBJECT_LAYER, type: 'circle', source: SOURCES['demo-object'], paint: { 'circle-radius': 13, 'circle-color': '#77dfcc', 'circle-stroke-width': 4, 'circle-stroke-color': '#163e42' } },
       { id: DISTRICT_SELECTED, type: 'line', source: SOURCES.districts, filter: ['in', ['get', 'id'], ['literal', []]], paint: { 'line-color': '#b8fff2', 'line-width': 3, 'line-opacity': 0.7 } },
       { id: SEARCH_LAYER, type: 'circle', source: SEARCH_SOURCE, paint: { 'circle-radius': 10, 'circle-color': '#ffc078', 'circle-stroke-width': 4, 'circle-stroke-color': '#402d19' } },
@@ -334,6 +363,18 @@ export function createMap(
   map.on('moveend', refreshNoise);
   map.on('click', (event) => {
     if (!loaded) return;
+    if (drawingDraft) {
+      const vertex = map.queryRenderedFeatures(event.point, { layers: [DRAFT_VERTICES] })[0];
+      const index = vertex?.properties?.vertexIndex;
+      if (typeof index === 'number') callbacks.onDrawingVertexClick?.(index);
+      else callbacks.onDrawingClick?.([event.lngLat.lng, event.lngLat.lat]);
+      return;
+    }
+    const userFeature = map.queryRenderedFeatures(event.point, { layers: [USER_POINTS, USER_LINES, USER_AREAS] })[0];
+    const userId = userFeature?.properties?.id;
+    if (typeof userId === 'string' && [USER_POINTS, USER_LINES, USER_AREAS].includes(userFeature.layer.id)) {
+      callbacks.onUserGeometryClick?.(userId); return;
+    }
     const objectLayers = [
       OBJECT_LAYER, GREEN_FILL, GREEN_LINE, WATER_FILL, WATER_LINE,
       METRO_LINE, METRO_STATION, METRO_ENTRANCE,
@@ -359,8 +400,10 @@ export function createMap(
   });
   map.on('mousemove', (event) => {
     if (!loaded) return;
+    if (drawingDraft) { map.getCanvas().style.cursor = 'crosshair'; return; }
     map.getCanvas().style.cursor = map.queryRenderedFeatures(event.point, {
       layers: [
+        USER_POINTS, USER_LINES, USER_AREAS,
         OBJECT_LAYER, GREEN_FILL, GREEN_LINE, WATER_FILL, WATER_LINE,
         METRO_LINE, METRO_STATION, METRO_ENTRANCE, DISTRICT_FILL,
         BUS_ROUTES, TRAM_ROUTES, TROLLEYBUS_ROUTES, TRANSPORT_STOPS,
@@ -381,6 +424,14 @@ export function createMap(
     setObjects: (data: MapObject[]) => {
       currentObjects = data;
       if (loaded) (map.getSource(SOURCES['demo-object']) as GeoJSONSource).setData(toGeoJSON(data));
+    },
+    setUserGeometries: (items: UserGeometry[]) => {
+      currentUserGeometries = items;
+      if (loaded) (map.getSource(USER_SOURCE) as GeoJSONSource).setData(toUserGeoJSON(items));
+    },
+    setDrawingDraft: (draft: DrawingDraft | null) => {
+      drawingDraft = draft;
+      if (loaded) (map.getSource(DRAFT_SOURCE) as GeoJSONSource).setData(draftPreview(draft));
     },
     setCategories: (definitions: Category[], ids: string[]) => {
       categories = definitions; visibleCategories = ids; applyCategories(); refreshPharmacies(); refreshRoads(); refreshNoise();

@@ -99,3 +99,8 @@
 - Added explicit source type, confidence, date, method and null acoustic intensity.
 - Added four independently controlled layers, viewport API, availability and point proximity.
 - Documented missing aviation contours and helicopter routes without inferred geometry.
+## SPRINT 15
+
+- Added separate PostGIS user geometries and narrow CRUD API for Point, LineString and Polygon.
+- Added drawing, vertex editing, cancel, save, reload and explicit delete controls.
+- Added three Layer Registry entries and distinct dark-map styling without routing dependencies.

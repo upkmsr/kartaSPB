@@ -5,6 +5,11 @@ Master Specification: [KARTASPB_AI_AGENT_SPEC.md](KARTASPB_AI_AGENT_SPEC.md).
 
 ## Текущий этап
 
+SPRINT 15 — локальные пользовательские геометрии Point, LineString и Polygon.
+Откройте «Мои геометрии», выберите инструмент, нажимайте на карту, задайте
+название и сохраните. Геометрии хранятся отдельно от импортированных объектов
+в PostGIS и доступны после перезагрузки. Подробности: [docs/sprint-15.md](docs/sprint-15.md).
+
 SPRINT 14 — раздельные дорожный и железнодорожный признаки влияния:
 оценочные классы дорог и реальные положения магистральных путей из OSM.
 Это не измерения шума; уровни дБ, авиационные контуры и вертолётные маршруты
@@ -107,6 +112,8 @@ docker compose up --build --wait
 - Noise availability: `GET /api/noise/availability`
 - Noise viewport: `GET /api/noise/viewport.geojson?bbox=30.2,59.8,30.4,60.0&type=road_noise,railway_noise`
 - Noise proximity: `GET /api/analysis/noise/point?lon=30.3158&lat=59.9391`
+- User geometries: `GET/POST /api/user/geometries`,
+  `GET/PATCH/DELETE /api/user/geometries/{id}`
 
 Compose ждёт БД, выполняет `alembic upgrade head`, затем запускает API и frontend.
 БД хранится в named volume, порт БД наружу не публикуется.

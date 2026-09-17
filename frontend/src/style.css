@@ -26,6 +26,18 @@ h1 { font-size: clamp(22px, 2.2vw, 30px); letter-spacing: -.035em; margin: 0 0 1
 .category-panel label { display: flex; align-items: center; gap: 8px; min-height: 36px; }
 .category-panel input { accent-color: #77dfcc; }
 .category-panel button { font-size: 11px; padding: 6px 10px; }
+.drawing-panel { margin-top: 12px; border-top: 1px solid #31434d; font-size: 12px; }
+.drawing-panel summary { display: flex; justify-content: space-between; padding: 9px 0; cursor: pointer; font-weight: 700; }
+.drawing-panel summary span { color: #77dfcc; }
+.drawing-content p { color: #b7c4d5; line-height: 1.4; }
+.drawing-content label { display: block; margin: 9px 0; }
+.drawing-content input, .drawing-content textarea { display: block; width: 100%; min-height: 38px; margin-top: 4px; padding: 7px; background: #101d27; border: 1px solid #527276; border-radius: 5px; color: #edf5fa; font: inherit; }
+.drawing-content textarea { min-height: 62px; resize: vertical; }
+.drawing-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.drawing-actions button, .user-geometry-list button { min-height: 36px; padding: 6px 9px; font-size: 11px; }
+.drawing-actions button:disabled { opacity: .5; cursor: default; }
+.user-geometry-list { max-height: 120px; overflow-y: auto; margin-top: 10px; }
+.user-geometry-list button { display: block; width: 100%; text-align: left; margin: 3px 0; }
 .search-panel { position: relative; margin-bottom: 14px; }
 .search-panel label { display: block; margin-bottom: 6px; color: #b7c4d5; font-size: 11px; }
 .search-row { display: flex; gap: 6px; }
@@ -72,6 +84,7 @@ h1 { font-size: clamp(22px, 2.2vw, 30px); letter-spacing: -.035em; margin: 0 0 1
   .region { flex-basis: 100%; order: 2; font-size: 11px; }
   .status { font-size: 10px; gap: 6px; }
   .map-intro { top: 14px; left: 14px; max-width: calc(100% - 84px); padding: 12px 14px; }
+  .map-intro:has(.drawing-panel[open]) { z-index: 4; }
   .map-intro .eyebrow { display: none; }
   .map-intro h1 { font-size: 21px; margin-bottom: 6px; }
   .map-intro > p:not(.eyebrow) { font-size: 12px; margin-bottom: 8px; }

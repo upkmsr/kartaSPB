@@ -38,7 +38,7 @@ it('renders labeled district controls that select and clear districts', () => {
     onLayerVisibilityChange={vi.fn()}
     onLayerOpacityChange={vi.fn()}
   />);
-  expect(screen.getAllByRole('checkbox')).toHaveLength(42);
+  expect(screen.getAllByRole('checkbox')).toHaveLength(45);
   expect(screen.getByText(/уровни дБ неизвестны/i)).toBeTruthy();
   expect(screen.getByRole('checkbox', { name: 'Авиационный шум · нет данных' })).toBeTruthy();
   const district = screen.getByRole('checkbox', { name: districts[1].properties.name });
@@ -62,6 +62,10 @@ it('updates registry visibility and bounded opacity with stable ordered IDs', ()
   expect(railwayOnly['noise-railway'].visible).toBe(true);
   expect(railwayOnly['noise-road'].visible).toBe(false);
   expect(railwayOnly['noise-aviation'].visible).toBe(false);
+  const hiddenUserLines = updateLayer(initialLayerRegistry, 'user-lines', { visible: false });
+  expect(hiddenUserLines['user-lines'].visible).toBe(false);
+  expect(hiddenUserLines['user-points'].visible).toBe(true);
+  expect(hiddenUserLines['user-areas'].visible).toBe(true);
   expect(orderedLayers(initialLayerRegistry).map((layer) => layer.id)).toEqual([
     'districts', 'demo-object', 'nature-green', 'nature-water',
     'metro-lines', 'metro-stations', 'metro-entrances',
@@ -69,5 +73,6 @@ it('updates registry visibility and bounded opacity with stable ordered IDs', ()
     'schools', 'school-catchments', 'kindergartens', 'medical', 'pharmacies',
     'road-major', 'road-kad', 'road-zsd', 'road-interchanges',
     'noise-road', 'noise-railway', 'noise-aviation', 'noise-helicopter',
+    'user-points', 'user-lines', 'user-areas',
   ]);
 });

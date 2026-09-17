@@ -18,6 +18,7 @@ from app.roads.api import router as roads_router
 from app.schools.api import router as schools_router
 from app.search import router as search_router
 from app.transport.api import router as transport_router
+from app.user_geometries.api import router as user_geometries_router
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,7 @@ app.include_router(roads_router)
 app.include_router(roads_analysis_router)
 app.include_router(noise_router)
 app.include_router(noise_analysis_router)
+app.include_router(user_geometries_router)
 
 
 @app.get("/api/health/live")

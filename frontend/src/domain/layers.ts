@@ -4,7 +4,8 @@ export type ProjectLayerId =
   | 'transport-bus' | 'transport-tram' | 'transport-trolleybus' | 'transport-stops'
   | 'schools' | 'school-catchments' | 'kindergartens' | 'medical' | 'pharmacies'
   | 'road-major' | 'road-kad' | 'road-zsd' | 'road-interchanges'
-  | 'noise-road' | 'noise-railway' | 'noise-aviation' | 'noise-helicopter';
+  | 'noise-road' | 'noise-railway' | 'noise-aviation' | 'noise-helicopter'
+  | 'user-points' | 'user-lines' | 'user-areas';
 
 export interface LayerDefinition {
   id: ProjectLayerId;
@@ -41,6 +42,9 @@ export const initialLayerRegistry: LayerRegistry = {
   'noise-railway': { id: 'noise-railway', name: 'Железнодорожное влияние', visible: false, opacity: 0.75, order: 220 },
   'noise-aviation': { id: 'noise-aviation', name: 'Авиационный шум · нет данных', visible: false, opacity: 0.6, order: 230 },
   'noise-helicopter': { id: 'noise-helicopter', name: 'Вертолёты · нет данных', visible: false, opacity: 0.6, order: 240 },
+  'user-points': { id: 'user-points', name: 'Мои точки', visible: true, opacity: 1, order: 250 },
+  'user-lines': { id: 'user-lines', name: 'Мои линии', visible: true, opacity: 1, order: 260 },
+  'user-areas': { id: 'user-areas', name: 'Мои области', visible: true, opacity: 0.8, order: 270 },
 };
 
 export function updateLayer(

@@ -17,6 +17,7 @@
 - [SPRINT 12 — Medical](sprint-12.md)
 - [SPRINT 13 — Roads](sprint-13.md)
 - [SPRINT 14 — Noise / Aviation / Helicopters](sprint-14.md)
+- [SPRINT 15 — Drawing & User Geometries](sprint-15.md)
 
 Общие сведения: [архитектура](architecture.md),
 [источники данных](data-sources.md), [разработка](development.md),

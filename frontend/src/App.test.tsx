@@ -14,7 +14,7 @@ import rawPoint from './data/demo/point.json';
 
 // Only mock the WebGL boundary. Real adapter, ID resolution, React state and card run.
 const { maps, MockMap } = vi.hoisted(() => {
-  interface ClickEvent { point?: { x: number; y: number } }
+  interface ClickEvent { point?: { x: number; y: number }; lngLat?: { lng: number; lat: number } }
   interface RenderedFeature { id?: string; layer: { id: string }; properties: Record<string, string> }
   class MockMap {
     handlers = new globalThis.Map<string, (event: ClickEvent) => void>();
@@ -56,13 +56,14 @@ vi.mock('maplibre-gl', () => ({
 beforeEach(() => {
   maps.length = 0;
   vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
-  vi.stubGlobal('fetch', vi.fn(async (url: string) => new Response(JSON.stringify(url.startsWith('/api/objects?') ? demoObjects : url === '/api/categories' ? [{ id: 'demo', name: 'Демонстрационные', description: '', color: '#77dfcc', defaultVisible: true }, { id: 'other', name: 'Прочее', description: '', color: '#ffc078', defaultVisible: true }] : { status: 'ok' }))));
+  vi.stubGlobal('fetch', vi.fn(async (url: string) => new Response(JSON.stringify(url === '/api/user/geometries' ? [] : url.startsWith('/api/objects?') ? demoObjects : url === '/api/categories' ? [{ id: 'demo', name: 'Демонстрационные', description: '', color: '#77dfcc', defaultVisible: true }, { id: 'other', name: 'Прочее', description: '', color: '#ffc078', defaultVisible: true }] : { status: 'ok' }))));
 });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 async function renderApp() {
   const view = render(<App />);
   await screen.findByText('Система готова');
+  await screen.findByText('Объектов загружено: 1');
   act(() => maps[0].emit('style.load'));
   return view;
 }
@@ -78,7 +79,8 @@ it('mounts a map container and supplies one separate GeoJSON source with a stabl
   expect(maps[0].addSource).toHaveBeenCalledWith('pharmacies', expect.objectContaining({ cluster: true }));
   expect(maps[0].addSource).toHaveBeenCalledWith('roads', expect.objectContaining({ type: 'geojson' }));
   expect(maps[0].addSource).toHaveBeenCalledWith('noise', expect.objectContaining({ type: 'geojson' }));
-  expect(maps[0].addLayer).toHaveBeenCalledTimes(31);
+  expect(maps[0].addSource).toHaveBeenCalledWith('user-geometries', expect.objectContaining({ type: 'geojson' }));
+  expect(maps[0].addLayer).toHaveBeenCalledTimes(37);
   expect(districts).toHaveLength(18);
   expect(demoObjects).toHaveLength(1);
   expect(rawPoint.type).toBe('Feature');
@@ -86,6 +88,59 @@ it('mounts a map container and supplies one separate GeoJSON source with a stabl
   expect(rawPoint.id).toBe(rawPoint.properties.id);
   expect(rawPoint.geometry.coordinates).toEqual([30.3158, 59.9391]);
   expect(screen.queryByRole('complementary', { name: 'Тестовый объект' })).toBeNull();
+});
+
+it('creates, edits and deletes a user point through the API while drawing clicks bypass district selection', async () => {
+  const saved = { id: '123e4567-e89b-42d3-a456-426614174000', name: 'Моя точка',
+    description: '', geometryType: 'Point', geometry: { type: 'Point', coordinates: [30.3, 59.9] },
+    createdAt: '2026-09-17T06:00:00Z', updatedAt: '2026-09-17T06:00:00Z' };
+  const calls: string[] = [];
+  vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
+    if (url === '/api/user/geometries' && !init?.method) return new Response(JSON.stringify([]));
+    if (url.startsWith('/api/user/geometries') && init?.method) {
+      calls.push(init.method);
+      if (init.method === 'DELETE') return new Response(null, { status: 204 });
+      const body = JSON.parse(String(init.body));
+      return new Response(JSON.stringify({ ...saved, ...body, geometryType: body.geometry.type }),
+        { status: init.method === 'POST' ? 201 : 200 });
+    }
+    return new Response(JSON.stringify(url.startsWith('/api/objects?') ? demoObjects
+      : url === '/api/categories' ? [{ id: 'demo', name: 'Демонстрационные', description: '', color: '#77dfcc', defaultVisible: true }]
+        : { status: 'ok' }));
+  }));
+  await renderApp();
+  fireEvent.click(screen.getByRole('button', { name: 'Добавить точку' }));
+  act(() => maps[0].emit('click', { point: { x: 20, y: 20 }, lngLat: { lng: 30.3, lat: 59.9 } }));
+  fireEvent.change(screen.getByLabelText('Название'), { target: { value: 'Моя точка' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Сохранить' }));
+  await screen.findByRole('complementary', { name: 'Пользовательская геометрия' });
+  expect(calls).toEqual(['POST']);
+  fireEvent.click(screen.getByRole('button', { name: 'Редактировать' }));
+  act(() => maps[0].emit('click', { point: { x: 25, y: 25 }, lngLat: { lng: 30.4, lat: 59.95 } }));
+  fireEvent.click(screen.getByRole('button', { name: 'Сохранить' }));
+  await screen.findByRole('complementary', { name: 'Пользовательская геометрия' });
+  expect(calls).toEqual(['POST', 'PATCH']);
+  fireEvent.click(screen.getByRole('button', { name: 'Удалить' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Подтвердить удаление' }));
+  await screen.findByText(/Мои геометрии/);
+  expect(calls).toEqual(['POST', 'PATCH', 'DELETE']);
+});
+
+it('keeps an editable draft after an API save error', async () => {
+  vi.stubGlobal('fetch', vi.fn(async (url: string, init?: RequestInit) => {
+    if (url === '/api/user/geometries' && init?.method === 'POST') return new Response('', { status: 503 });
+    return new Response(JSON.stringify(url === '/api/user/geometries' ? []
+      : url.startsWith('/api/objects?') ? demoObjects
+        : url === '/api/categories' ? [{ id: 'demo', name: 'Демонстрационные', description: '', color: '#77dfcc', defaultVisible: true }]
+          : { status: 'ok' }));
+  }));
+  await renderApp();
+  fireEvent.click(screen.getByRole('button', { name: 'Добавить точку' }));
+  act(() => maps[0].emit('click', { point: { x: 20, y: 20 }, lngLat: { lng: 30.3, lat: 59.9 } }));
+  fireEvent.change(screen.getByLabelText('Название'), { target: { value: 'Ошибка' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Сохранить' }));
+  expect(await screen.findByRole('alert')).toBeTruthy();
+  expect(screen.getByRole('button', { name: 'Отменить рисование' })).toBeTruthy();
 });
 
 it('shows noise provenance and missing intensity without inventing a dB value', () => {
@@ -211,7 +266,7 @@ it('filters one and multiple categories locally and restores all without recreat
 });
 
 it('keeps the district UI and map mounted when object API fails and allows retry', async () => {
-  vi.mocked(fetch).mockImplementation(async (url) => new Response(JSON.stringify({ status: 'ok' }), { status: String(url).startsWith('/api/objects?') ? 503 : 200 }));
+  vi.mocked(fetch).mockImplementation(async (url) => new Response(JSON.stringify(url === '/api/user/geometries' ? [] : { status: 'ok' }), { status: String(url).startsWith('/api/objects?') ? 503 : 200 }));
   render(<App />);
   expect(await screen.findByRole('alert')).toBeTruthy();
   expect(screen.getByRole('checkbox', { name: districts[0].properties.name })).toBeTruthy();

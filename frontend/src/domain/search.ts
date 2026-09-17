@@ -32,7 +32,7 @@ export interface MapTarget {
   showMarker: boolean;
 }
 
-export function geometryCenter(object: MapObject): [number, number] {
+export function geometryCenter(object: Pick<MapObject, 'geometry'>): [number, number] {
   const points: number[][] = [];
   const visit = (coordinates: unknown): void => {
     if (Array.isArray(coordinates) && coordinates.length >= 2 &&
